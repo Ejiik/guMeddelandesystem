@@ -39,7 +39,10 @@ public class UI extends JPanel{
 		
 		private JScrollPane scrollMessages = new JScrollPane(listMessages);
 		private JScrollPane listScroll = new JScrollPane(listUsers);
-		private JTabbedPane tabbedPane = new JTabbedPane();
+//		private JTabbedPane tabbedPane = new JTabbedPane();
+		
+		private JTextPane textPaneMessage = new JTextPane();
+		private JScrollPane scrollMessage = new JScrollPane(textPaneMessage);
 		
 		private JTextPane textPane = new JTextPane();
 		private JScrollPane scrollChat = new JScrollPane(textPane);
@@ -48,7 +51,7 @@ public class UI extends JPanel{
 		
 		public UI(Client client) {
 			this.client = client;
-			doc = (StyledDocument) textPane.getDocument();
+			doc = (StyledDocument) textPaneMessage.getDocument();
 			setPreferredSize(new Dimension(1100,720));
 			setLayout(new BorderLayout());
 			add(chatPanel(), BorderLayout.CENTER);
@@ -58,14 +61,17 @@ public class UI extends JPanel{
 //			add(inputPanel(), BorderLayout.SOUTH);
 			addListeners();
 		}
-		
+
 		public void addListeners() {
 			btnLogin.addActionListener(listener); 
 			btnChooseFile.addActionListener(listener);
 			btnSendMessage.addActionListener(listener);
 			btnRemoveImage.addActionListener(listener);
 		}
-		
+		/**
+		 * Previously used panel for login.
+		 * @return
+		 */
 		private JPanel login() {
 			JPanel panel = new JPanel();
 //			panel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -85,7 +91,10 @@ public class UI extends JPanel{
 //			panel.add(btnLogin);
 			return panel;
 		}
-		
+		/**
+		 * JPanel containing a list of messages and the box where one writes a message.
+		 * @return
+		 */
 		private JPanel chatPanel() {
 //			JPanel panel = new JPanel();
 //			panel.setLayout(new FlowLayout());
@@ -121,7 +130,10 @@ public class UI extends JPanel{
 			panel.add(messageScroll);
 			return panel;
 		}
-		
+		/**
+		 * JPanel with inputs for sending a message, not currently used in this version.
+		 * @return
+		 */
 		private JPanel inputPanel() {
 			JPanel panel = new JPanel();
 			panel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -136,7 +148,12 @@ public class UI extends JPanel{
 			panel.add(messageScroll);
 			return panel;
 		}
-		
+		/**
+		 * JPanel containing the input fields for username, ip, and port. Also a list of users
+		 * and the preview window for images that should be sent. Also contains buttons for choosing an iamge,
+		 * cancelling this choice, and sending the message.
+		 * @return
+		 */
 		private JPanel serverPanel() {
 			JPanel panel = new JPanel();
 			panel.setLayout(new FlowLayout(FlowLayout.LEADING));
@@ -180,7 +197,10 @@ public class UI extends JPanel{
 			panel.add(btnSendMessage);
 			return panel;
 		}
-		
+		/**
+		 * A JPanel used for filling out the west side of the main frame.
+		 * @return panel
+		 */
 		private JPanel leftPanel() {
 			JPanel panel = new JPanel();
 			panel.setLayout(new FlowLayout());
@@ -188,7 +208,22 @@ public class UI extends JPanel{
 			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			return panel;
 		}
-		
+		/**
+		 * A JPanel defining the appearance of the entire message frame.
+		 * @return
+		 */
+		private JPanel messagePanel() {
+			JPanel panel = new JPanel();
+			panel.setPreferredSize(new Dimension(900,720));
+			scrollMessage.setPreferredSize(new Dimension(900,720));
+			
+			panel.add(scrollMessage);
+			return panel;
+		}
+		/**
+		 * Displays the UI.
+		 * @param client
+		 */
 		public void startFrame(Client client) {
 			UI ui = new UI(client);
 			JFrame frame = new JFrame();
@@ -204,7 +239,7 @@ public class UI extends JPanel{
 			append("\n");
 		}
 		/**
-		 * Add the string input at the last line of the JTextPane chat area.
+		 * Add the string input at the last line of the JTextPane that the StyledDocument is assigned to.
 		 * @param str String to be added to the chat.
 		 */
 		public void append(String str) {
@@ -214,37 +249,55 @@ public class UI extends JPanel{
 				System.err.println(e);
 			}
 		}
-		
+		/**
+		 * The image that is to be sent is displayed in a small preview window.
+		 * @param imageIcon The ImageIcon that is to be displayed.
+		 */
 		public void displayPreview(ImageIcon imageIcon) {
 			//Skulle egentligen vilja att bilden skulle skalas till labeln
 			//men kan inte riktigt lista ut hur man gör.
 			lblImageViewer.setIcon(imageIcon);
 		}
-		
+		/**
+		 * Opens the message selected from the list of messages in a new frame.
+		 * @param index Index in the list of messages, indicating the specific messages to be viewed.
+		 */
 		public void openMessage(int index) {
+			JFrame frame = new JFrame("Meddelande");
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.add(messagePanel());
+			frame.pack();
+			frame.setVisible(true);
 			
 		}
-		
+		//Metod för att uppdatera listan med användare? Vet inte om den behövs eller ska vara här.
 		public void updateUserList() {
 			
 		}
-		
+		//Metod för att uppdatera listan med meddelande. Vet inte om den behövs eller ska vara här.
 		public void updateMessageList() {
 			
 		}
 	
 		//Den här main-metoden ska givetvis inte vara här sen.
 	public static void main (String[] args) {
-		Client client = new Client();
+		Client client = new Client("localhost",8500);
 		UI ui = new UI(client);
-		JFrame frame = new JFrame();
+		JFrame frame = new JFrame("Meddelandesystem");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(ui);
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
+	/**
+	 * Defines the events of mouse clicks on the JList containing messages.
+	 * @author Viktor
+	 *
+	 */
 	private class MouseAdapter implements MouseListener {
+		/**
+		 * Enables a mouse click to register for a particular index in the list of messages.
+		 */
 		public void mouseClicked(MouseEvent e) {
 			listMessages = (JList)e.getSource();
 			if(e.getClickCount() == 2) {
