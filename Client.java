@@ -2,25 +2,25 @@ package guMeddelandesystem;
 
 import javax.swing.*;
 
-public class Controller {
+public class Client {
 	private String ip, name;
 	private int port;
 //	private Client client;
 	private UI ui;
 	
-	public Controller() {
+	public Client() {
 		ui = new UI(this);
 	}
 	
-	public void readIp(String ip) {
+	public void setIP(String ip) {
 		this.ip = ip;
 	}
 	
-	public void readPort(int port) {
+	public void setPort(int port) {
 		this.port = port;
 	}
 	
-	public void readUsername(String name) {
+	public void setUsername(String name) {
 		this.name = name;
 	}
 	
