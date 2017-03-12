@@ -24,8 +24,13 @@ public class Controller {
 		this.name = name;
 	}
 	
+	public void sendMessage(String message) {
+		ui.append(message);
+	}
+	
 	public void sendImage(String filepath) {
 		ImageIcon image = new ImageIcon(filepath);
+		JOptionPane.showMessageDialog(null, image);
 		ui.displayImage(image);
 	}
 	
