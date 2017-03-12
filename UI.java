@@ -42,10 +42,10 @@ public class UI extends JPanel{
 		private JTextPane textPane = new JTextPane();
 		private JScrollPane scrollChat = new JScrollPane(textPane);
 		private StyledDocument doc;
-		private Controller controller;
+		private Client client;
 		
-		public UI(Controller controller) {
-			this.controller = controller;
+		public UI(Client client) {
+			this.client = client;
 			doc = (StyledDocument) textPane.getDocument();
 			setPreferredSize(new Dimension(1200,900));
 			setLayout(new BorderLayout());
@@ -139,8 +139,8 @@ public class UI extends JPanel{
 			return panel;
 		}
 		
-		public void startFrame(Controller controller) {
-			UI ui = new UI(controller);
+		public void startFrame(Client client) {
+			UI ui = new UI(client);
 			JFrame frame = new JFrame();
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.add(ui);
@@ -173,8 +173,8 @@ public class UI extends JPanel{
 //		try {
 //		UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 //		} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {}
-		Controller controller = new Controller();
-		UI ui = new UI(controller);
+		Client client = new Client();
+		UI ui = new UI(client);
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(ui);
@@ -192,10 +192,10 @@ public class UI extends JPanel{
 					txtFieldUsername.setEditable(false);
 					txtFieldIP.setEditable(false);
 					txtFieldPort.setEditable(false);
-					controller.readUsername(txtFieldUsername.getText());
-					controller.readIp(txtFieldIP.getText());
-					controller.readPort(Integer.parseInt(txtFieldPort.getText()));
-					controller.connectToServer();
+					client.setUsername(txtFieldUsername.getText());
+					client.setIP(txtFieldIP.getText());
+					client.setPort(Integer.parseInt(txtFieldPort.getText()));
+					client.connectToServer();
 				} else if(btnLogin.getText().equals("Logga ut")) {
 					btnLogin.setText("Logga in");
 					txtFieldUsername.setEditable(true);
@@ -211,12 +211,12 @@ public class UI extends JPanel{
 				} else if (!txtFieldWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
 					append(txtFieldWriteMessage.getText() + "\n");
 					txtFieldWriteMessage.setText("");
-					controller.sendImage(filepath);
+					client.sendImage(filepath);
 					lblImageViewer.setIcon(null);
 					System.out.println("Send message and or image");
 				} else if (txtFieldWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
 					if(filepath != null) {
-					controller.sendImage(filepath);
+					client.sendImage(filepath);
 					lblImageViewer.setIcon(null);
 					System.out.println("filepath is not null");
 					}
