@@ -26,7 +26,7 @@ public class UI extends JPanel{
 		private JButton btnLogin = new JButton("Logga in");
 		private JTextField txtFieldIP = new JTextField("IP-nummer");
 		private JTextField txtFieldPort = new JTextField("Portnummer");
-		private JLabel lblImageViewer = new JLabel("TESTEST");
+		private JLabel lblImageViewer = new JLabel();
 		
 //		private JList listChat = new JList();
 //		private JTextArea txtAreaChat = new JTextArea();
@@ -35,6 +35,7 @@ public class UI extends JPanel{
 		private JButton btnSendMessage = new JButton("Skicka");
 		private JButton btnChooseFile = new JButton("Bild");
 		private JFileChooser fileChooser = new JFileChooser();
+		private JButton btnRemoveImage = new JButton("Ångra bildval");
 		
 		private JList listUsers = new JList(); //???
 		
@@ -48,9 +49,11 @@ public class UI extends JPanel{
 			doc = (StyledDocument) textPane.getDocument();
 			setPreferredSize(new Dimension(1200,900));
 			setLayout(new BorderLayout());
-			add(Login(), BorderLayout.NORTH);
 			add(chatPanel(), BorderLayout.CENTER);
 			add(serverPanel(), BorderLayout.EAST);
+			add(leftPanel(), BorderLayout.WEST);
+			add(login(), BorderLayout.NORTH);
+			add(inputPanel(), BorderLayout.SOUTH);
 			addListeners();
 		}
 		
@@ -58,45 +61,46 @@ public class UI extends JPanel{
 			btnLogin.addActionListener(listener); 
 			btnChooseFile.addActionListener(listener);
 			btnSendMessage.addActionListener(listener);
+			btnRemoveImage.addActionListener(listener);
 		}
 		
-		private JPanel Login() {
+		private JPanel login() {
 			JPanel panel = new JPanel();
-			panel.setLayout(new FlowLayout());
-//			setPreferredSize(new Dimension(500,150));
-//			lblGreeting.setPreferredSize(new Dimension(300, 30));
-//			lblUsername.setPreferredSize(new Dimension(200,30));
+			panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+//			panel.setBounds(5, 0, panel.getWidth(), panel.getHeight());
+			panel.setPreferredSize(new Dimension(1000,40));
 			txtFieldUsername.setPreferredSize(new Dimension(200,30));
 			txtFieldIP.setPreferredSize(new Dimension(200,30));
 			txtFieldPort.setPreferredSize(new Dimension(200,30));
 			btnLogin.setPreferredSize(new Dimension(120,30));
-//			lblGreeting.setFont(font1);
-//			lblUsername.setFont(font1);
 			txtFieldIP.setFont(font1);
 			txtFieldPort.setFont(font1);
 			txtFieldUsername.setFont(font1);
 			btnLogin.setFont(font1);
 			txtFieldUsername.setFocusable(true);
-//			panel.setPreferredSize(new Dimension(500,150));
-//			panel.add(lblGreeting);
-			
-			panel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
 			panel.add(txtFieldUsername);
 			panel.add(txtFieldIP);
 			panel.add(txtFieldPort);
 			panel.add(btnLogin);
-		//Lägg till grejer för servern och port.
 			return panel;
 		}
 		
 		private JPanel chatPanel() {
 			JPanel panel = new JPanel();
 			panel.setLayout(new FlowLayout());
-//			listChat.setPreferredSize(new Dimension(900,500));
+			panel.setPreferredSize(new Dimension(900,800));
 			scrollChat.setPreferredSize(new Dimension(900,800));
 			scrollChat.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-//			txtAreaChat.setEditable(false);
 			textPane.setEditable(false);
+			
+			panel.add(scrollChat);
+			return panel;
+		}
+		
+		private JPanel inputPanel() {
+			JPanel panel = new JPanel();
+			panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+			panel.setPreferredSize(new Dimension(400,40));
 			txtFieldWriteMessage.setPreferredSize(new Dimension(550,30));
 			txtFieldWriteMessage.setFont(font1);
 			txtFieldWriteMessage.addActionListener(listener);
@@ -104,12 +108,9 @@ public class UI extends JPanel{
 			btnChooseFile.setPreferredSize(new Dimension(80,30));
 			btnSendMessage.setFont(font1);
 			btnChooseFile.setFont(font1);
-//			panel.add(listChat);
 //			fileChooser.setFileFilter(new ImageFilter());
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG, JPEG, GIF, PNG", "jpg", "gif", "png", "jpeg");
 			fileChooser.setFileFilter(filter);
-			
-			panel.add(scrollChat);
 			panel.add(txtFieldWriteMessage);
 			panel.add(btnSendMessage);
 			panel.add(btnChooseFile);
@@ -119,14 +120,22 @@ public class UI extends JPanel{
 		private JPanel serverPanel() {
 			JPanel panel = new JPanel();
 			panel.setLayout(new FlowLayout());
-			panel.setPreferredSize(new Dimension(300,850));
+			panel.setPreferredSize(new Dimension(290,850));
 			listUsers.setPreferredSize(new Dimension(250,400));
 			listUsers.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Användare"));
-			lblImageViewer.setPreferredSize(new Dimension(200,200));
+			lblImageViewer.setPreferredSize(new Dimension(250,250));
 			lblImageViewer.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
+			btnRemoveImage.setPreferredSize(new Dimension(160,30));
+			btnRemoveImage.setFont(font1);
 			panel.add(listUsers);
 			panel.add(lblImageViewer);
+			panel.add(btnRemoveImage);
+			return panel;
+		}
+		
+		private JPanel leftPanel() {
+			JPanel panel = new JPanel();
+			panel.setPreferredSize(new Dimension(10,900));
 			return panel;
 		}
 		
@@ -143,13 +152,20 @@ public class UI extends JPanel{
 			textPane.insertIcon(imageIcon);
 			append("\n");
 		}
-		
+		/**
+		 * Add the string input at the last line of the JTextPane chat area.
+		 * @param str String to be added to the chat.
+		 */
 		public void append(String str) {
 			try {
 			doc.insertString(doc.getLength(), str, null);
 			} catch (BadLocationException e) {
 				System.err.println(e);
 			}
+		}
+		
+		public void displayPreview(ImageIcon imageIcon) {
+			//Någon jävla kod som kan visa en tumnagel
 		}
 	
 	
@@ -191,21 +207,32 @@ public class UI extends JPanel{
 				if(!txtFieldWriteMessage.getText().equals("") && lblImageViewer.getIcon() == null) {
 					append(txtFieldWriteMessage.getText() + "\n");
 					txtFieldWriteMessage.setText("");
+					System.out.println("Send message");
 				} else if (!txtFieldWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
 					append(txtFieldWriteMessage.getText() + "\n");
 					txtFieldWriteMessage.setText("");
 					controller.sendImage(filepath);
 					lblImageViewer.setIcon(null);
+					System.out.println("Send message and or image");
 				} else if (txtFieldWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
+					if(filepath != null) {
 					controller.sendImage(filepath);
 					lblImageViewer.setIcon(null);
+					System.out.println("filepath is not null");
+					}
 				}
 			} else if (e.getSource() == btnChooseFile) {
 				returnval = fileChooser.showOpenDialog(null);
 				if(returnval == JFileChooser.APPROVE_OPTION) {
 					filepath = fileChooser.getSelectedFile().getPath();
-					lblImageViewer.setIcon(new ImageIcon(fileChooser.getSelectedFile().getPath()));
+					displayPreview(new ImageIcon(fileChooser.getSelectedFile().getPath()));
+//					lblImageViewer.setIcon(new ImageIcon(fileChooser.getSelectedFile().getPath()));
+					System.out.println("Chose image");
 				}
+			} else if (e.getSource() == btnRemoveImage) {
+				lblImageViewer.setIcon(null);
+				filepath = null;
+				System.out.println("Removed image");
 			}
 		}
 		
