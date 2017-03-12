@@ -89,6 +89,7 @@ public class Client {
 						for(int i = 0; i<newMsgBuffer.length;i++){
 							messages.add(newMsgBuffer[i]);
 						}
+						break;
 					}
 				}
 			} catch(Exception e){
