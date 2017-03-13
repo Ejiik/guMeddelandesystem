@@ -27,7 +27,6 @@ public class UI extends JPanel{
 		private JLabel lblImageViewer = new JLabel();
 		
 		private JTextArea txtAreaWriteMessage = new JTextArea();
-//		private JTextField txtFieldWriteMessage = new JTextField();
 		private JButton btnSendMessage = new JButton("Skicka meddelande");
 		private JButton btnChooseFile = new JButton("Välj Bild");
 		private JFileChooser fileChooser = new JFileChooser();
@@ -39,7 +38,6 @@ public class UI extends JPanel{
 		
 		private JScrollPane scrollMessages = new JScrollPane(listMessages);
 		private JScrollPane listScroll = new JScrollPane(listUsers);
-//		private JTabbedPane tabbedPane = new JTabbedPane();
 		
 		private JTextPane textPaneMessage = new JTextPane();
 		private JScrollPane scrollMessage = new JScrollPane(textPaneMessage);
@@ -48,8 +46,6 @@ public class UI extends JPanel{
 		private JScrollPane scrollChat = new JScrollPane(textPane);
 		private StyledDocument doc;
 		private Client client;
-		
-		private Message[] messages = new Message[5];
 		
 		public UI(Client client) {
 			this.client = client;
@@ -218,7 +214,6 @@ public class UI extends JPanel{
 			JPanel panel = new JPanel();
 			panel.setPreferredSize(new Dimension(900,720));
 			scrollMessage.setPreferredSize(new Dimension(900,720));
-			
 			panel.add(scrollMessage);
 			return panel;
 		}
@@ -240,6 +235,15 @@ public class UI extends JPanel{
 			textPane.insertIcon(imageIcon);
 			append("\n");
 		}
+		
+		public String getMessageText() {
+			return txtAreaWriteMessage.getText(); 
+		}
+		
+		public Icon getImageIcon() {
+			return lblImageViewer.getIcon();
+		}
+		
 		/**
 		 * Add the string input at the last line of the JTextPane that the StyledDocument is assigned to.
 		 * @param str String to be added to the chat.
@@ -274,17 +278,17 @@ public class UI extends JPanel{
 			append(listMessages.getModel().getElementAt(index).getTimeReceived());
 			append(listMessages.getModel().getElementAt(index).getMessage());
 			append(listMessages.getModel().getElementAt(index).getSender());
-			if(listMessages.getModel().getElementAt(index).getImageIcon() == null) {
+			if(listMessages.getModel().getElementAt(index).getImageIcon() != null) {
 				displayImage(listMessages.getModel().getElementAt(index).getImageIcon());
 			}
 		}
 		//Metod för att uppdatera listan med användare? Vet inte om den behövs eller ska vara här.
 		public void updateUserList(String[] usernames) {
-			listUsers = new JList(usernames);
+			listUsers.setListData(usernames);
 		}
 		//Metod för att uppdatera listan med meddelande. Vet inte om den behövs eller ska vara här.
 		public void updateMessageList(Message[] messages) {
-			listMessages = new JList(messages);
+			listMessages.setListData(messages);
 		}
 	
 		//Den här main-metoden ska givetvis inte vara här sen.
@@ -348,12 +352,10 @@ public class UI extends JPanel{
 				}
 			} else if (e.getSource() == btnSendMessage) {
 				if(!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() == null) {
-//					append(txtAreaWriteMessage.getText() + "\n");
 					client.sendMessage(txtAreaWriteMessage.getText());
 					txtAreaWriteMessage.setText("");
 					System.out.println("Send message");
 				} else if (!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
-//					append(txtAreaWriteMessage.getText() + "\n");
 					client.sendMessage(txtAreaWriteMessage.getText());
 					txtAreaWriteMessage.setText("");
 					client.sendImage(filepath);
@@ -371,7 +373,6 @@ public class UI extends JPanel{
 				if(returnval == JFileChooser.APPROVE_OPTION) {
 					filepath = fileChooser.getSelectedFile().getPath();
 					displayPreview(new ImageIcon(fileChooser.getSelectedFile().getPath()));
-//					lblImageViewer.setIcon(new ImageIcon(fileChooser.getSelectedFile().getPath()));
 					System.out.println("Chose image");
 				}
 			} else if (e.getSource() == btnRemoveImage) {
