@@ -188,7 +188,6 @@ public class UI extends JPanel{
 			panel.add(txtFieldPort);
 			panel.add(btnLogin);
 			panel.add(listScroll);
-//			panel.add(listUsers);
 			panel.add(lblImageViewer);
 			panel.add(btnChooseFile);
 			panel.add(btnRemoveImage);
@@ -242,6 +241,10 @@ public class UI extends JPanel{
 		
 		public Icon getImageIcon() {
 			return lblImageViewer.getIcon();
+		}
+		
+		public int[] getUsersSelected() {
+			return listUsers.getSelectedIndices();
 		}
 		
 		/**
