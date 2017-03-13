@@ -34,8 +34,8 @@ public class UI extends JPanel{
 		private JButton btnRemoveImage = new JButton("Ångra bildval");
 		private JScrollPane messageScroll = new JScrollPane(txtAreaWriteMessage);
 		
-		private JList listUsers = new JList();
-		private JList listMessages = new JList();
+		private JList<String> listUsers = new JList();
+		private JList<Message> listMessages = new JList();
 		
 		private JScrollPane scrollMessages = new JScrollPane(listMessages);
 		private JScrollPane listScroll = new JScrollPane(listUsers);
@@ -149,7 +149,7 @@ public class UI extends JPanel{
 //			messageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 //			panel.add(messageScroll);
 //			return panel;
-		}
+//		}
 		/**
 		 * JPanel containing the input fields for username, ip, and port. Also a list of users
 		 * and the preview window for images that should be sent. Also contains buttons for choosing an iamge,
@@ -271,7 +271,7 @@ public class UI extends JPanel{
 			frame.pack();
 			frame.setVisible(true);
 			append(listMessages.getModel().getElementAt(index).getTimeSent());
-			append(listMessages.getModel().getElementAt(index).getTimeRecieved());
+			append(listMessages.getModel().getElementAt(index).getTimeReceived());
 			append(listMessages.getModel().getElementAt(index).getMessage());
 			append(listMessages.getModel().getElementAt(index).getSender());
 			if(listMessages.getModel().getElementAt(index).getImageIcon() == null) {
@@ -291,7 +291,6 @@ public class UI extends JPanel{
 	public static void main (String[] args) {
 		Client client = new Client();
 		UI ui = new UI(client);
-		ui.updateMessageList();
 		JFrame frame = new JFrame("Meddelandesystem");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(ui);
