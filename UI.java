@@ -34,7 +34,7 @@ public class UI extends JPanel{
 		private JButton btnRemoveImage = new JButton("Ångra bildval");
 		private JScrollPane messageScroll = new JScrollPane(txtAreaWriteMessage);
 		
-		private JList listUsers = new JList(); //???
+		private JList listUsers = new JList();
 		private JList listMessages = new JList();
 		
 		private JScrollPane scrollMessages = new JScrollPane(listMessages);
@@ -48,6 +48,8 @@ public class UI extends JPanel{
 		private JScrollPane scrollChat = new JScrollPane(textPane);
 		private StyledDocument doc;
 		private Client client;
+		
+		private Message[] messages = new Message[5];
 		
 		public UI(Client client) {
 			this.client = client;
@@ -134,19 +136,19 @@ public class UI extends JPanel{
 		 * JPanel with inputs for sending a message, not currently used in this version.
 		 * @return
 		 */
-		private JPanel inputPanel() {
-			JPanel panel = new JPanel();
-			panel.setLayout(new FlowLayout(FlowLayout.LEFT));
-			panel.setPreferredSize(new Dimension(1000,190));
-			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			txtAreaWriteMessage.setPreferredSize(new Dimension(800,180));
-			txtAreaWriteMessage.setFont(font1);
-			txtAreaWriteMessage.setLineWrap(true);
-			txtAreaWriteMessage.setWrapStyleWord(true);
-//			messageScroll.setPreferredSize(new Dimension(800,180));
-			messageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-			panel.add(messageScroll);
-			return panel;
+//		private JPanel inputPanel() {
+//			JPanel panel = new JPanel();
+//			panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+//			panel.setPreferredSize(new Dimension(1000,190));
+//			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//			txtAreaWriteMessage.setPreferredSize(new Dimension(800,180));
+//			txtAreaWriteMessage.setFont(font1);
+//			txtAreaWriteMessage.setLineWrap(true);
+//			txtAreaWriteMessage.setWrapStyleWord(true);
+////			messageScroll.setPreferredSize(new Dimension(800,180));
+//			messageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+//			panel.add(messageScroll);
+//			return panel;
 		}
 		/**
 		 * JPanel containing the input fields for username, ip, and port. Also a list of users
@@ -268,21 +270,28 @@ public class UI extends JPanel{
 			frame.add(messagePanel());
 			frame.pack();
 			frame.setVisible(true);
-			
+			append(listMessages.getModel().getElementAt(index).getTimeSent());
+			append(listMessages.getModel().getElementAt(index).getTimeRecieved());
+			append(listMessages.getModel().getElementAt(index).getMessage());
+			append(listMessages.getModel().getElementAt(index).getSender());
+			if(listMessages.getModel().getElementAt(index).getImageIcon() == null) {
+				displayImage(listMessages.getModel().getElementAt(index).getImageIcon());
+			}
 		}
 		//Metod för att uppdatera listan med användare? Vet inte om den behövs eller ska vara här.
-		public void updateUserList() {
-			
+		public void updateUserList(String[] usernames) {
+			listUsers = new JList(usernames);
 		}
 		//Metod för att uppdatera listan med meddelande. Vet inte om den behövs eller ska vara här.
-		public void updateMessageList() {
-			
+		public void updateMessageList(Message[] messages) {
+			listMessages = new JList(messages);
 		}
 	
 		//Den här main-metoden ska givetvis inte vara här sen.
 	public static void main (String[] args) {
-		Client client = new Client("localhost",8500);
+		Client client = new Client();
 		UI ui = new UI(client);
+		ui.updateMessageList();
 		JFrame frame = new JFrame("Meddelandesystem");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(ui);
