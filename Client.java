@@ -26,9 +26,10 @@ public class Client {
 	public void setUsername(String name) {
 		this.name = name;
 	}
-	
+
 	/**
 	 * Returns time of the day using 24h local time.
+	 * 
 	 * @return a string on the form "HH:MM:SS"
 	 */
 	public String getTime() {
@@ -42,7 +43,7 @@ public class Client {
 		message.setSender(this.name);
 		message.setTimeSent(getTime());
 
-		new SendMessage(message, this.ip, this.port);
+		new SendMessage(message, this.ip, this.port).start();
 	}
 
 	public void sendMessage(String message) {
@@ -56,11 +57,12 @@ public class Client {
 	}
 
 	public void connectToServer() {
-		
+
 	}
-	
+
 	/**
 	 * Inner class that sends a message to the server
+	 * 
 	 * @author Isak Hartman
 	 *
 	 */
@@ -74,7 +76,6 @@ public class Client {
 			try {
 				socket = new Socket(ip, port);
 				oos = new ObjectOutputStream(socket.getOutputStream());
-				start();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
