@@ -1,18 +1,25 @@
 package guMeddelandesystem;
 
 import javax.swing.*;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
 
-public class Client {
+/**
+ * Client class that connects to the server to send and receive data.
+ * 
+ * @author Isak Hartman
+ *
+ */
+public class Client extends Observable {
 	private String ip, name;
 	private int port;
 	private UI ui;
+	
 
 	public Client() {
 		ui = new UI(this);
+		new ReceiveMessage(this.ip, this.port).start();
 	}
 
 	public void setIP(String ip) {
@@ -57,7 +64,7 @@ public class Client {
 	}
 
 	public void connectToServer() {
-
+		new Connection().start();
 	}
 
 	/**
@@ -92,6 +99,58 @@ public class Client {
 				socket.close();
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Inner class that listens to the server for incoming messages
+	 * 
+	 * @author Isak Hartman
+	 *
+	 */
+	private class ReceiveMessage extends Thread {
+		private Message message;
+		private Socket socket;
+		private ObjectInputStream ois;
+		
+		public ReceiveMessage(String ip, int port) {
+			try {
+				socket = new Socket(ip, port);
+				ois = new ObjectInputStream(socket.getInputStream());
+			} catch (IOException e) {
+				System.out.print(e);
+			}
+		}
+		
+		public void run() {
+			while (true) {
+				try {
+					this.message = (Message) ois.readObject();
+					setChanged();
+					notifyObservers(this.message);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Inner class that tells the server that this client is connected and receives a list of connected users.
+	 * 
+	 * @author Isak Hartman
+	 *
+	 */
+	private class Connection extends Thread {
+		private ObjectInputStream ois;
+		private ObjectOutputStream oos;
+		
+		public void run() {
+			while(!Thread.interrupted()) {
+				
 			}
 		}
 	}
