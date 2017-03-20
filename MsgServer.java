@@ -156,5 +156,9 @@ public class MsgServer {
 			}
 		}
 	}
+	
+	public static void main(String[] args) {
+		new MsgServer(3500);
+	}
 
 }
