@@ -355,20 +355,23 @@ public class UI extends JPanel{
 				}
 			} else if (e.getSource() == btnSendMessage) {
 				if(!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() == null) {
-					client.sendMessage(txtAreaWriteMessage.getText());
+//					client.sendMessage(txtAreaWriteMessage.getText());
+					client.createMessage();
 					txtAreaWriteMessage.setText("");
 					System.out.println("Send message");
 				} else if (!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
-					client.sendMessage(txtAreaWriteMessage.getText());
+//					client.sendMessage(txtAreaWriteMessage.getText());
+					client.createMessage();
 					txtAreaWriteMessage.setText("");
-					client.sendImage(filepath);
+//					client.sendImage(filepath);
 					lblImageViewer.setIcon(null);
 					System.out.println("Send message and or image");
 				} else if (txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
 					if(filepath != null) {
-					client.sendImage(filepath);
-					lblImageViewer.setIcon(null);
-					System.out.println("filepath is not null");
+						client.createMessage();
+//						client.sendImage(filepath);
+						lblImageViewer.setIcon(null);
+						System.out.println("filepath is not null");
 					}
 				}
 			} else if (e.getSource() == btnChooseFile) {
