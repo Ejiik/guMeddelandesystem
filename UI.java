@@ -1,4 +1,4 @@
-﻿package guMeddelandesystem;
+package guMeddelandesystem;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -305,15 +305,15 @@ public class UI extends JPanel{
 		}
 	
 		//Den här main-metoden ska givetvis inte vara här sen.
-	public static void main (String[] args) {
-		Client client = new Client();
-		UI ui = new UI();
-		JFrame frame = new JFrame("Meddelandesystem");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(ui);
-		frame.pack();
-		frame.setVisible(true);
-	}
+//	public static void main (String[] args) {
+//		Client client = new Client();
+//		UI ui = new UI();
+//		JFrame frame = new JFrame("Meddelandesystem");
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		frame.add(ui);
+//		frame.pack();
+//		frame.setVisible(true);
+//	}
 	/**
 	 * Defines the events of mouse clicks on the JList containing messages.
 	 * @author Viktor

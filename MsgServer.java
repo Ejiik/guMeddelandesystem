@@ -6,11 +6,12 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class MsgServer {
 	private int port;
-	private LinkedList<String> userReg = new LinkedList<String>();
+	private ArrayList<String> userReg = new ArrayList<String>();
 	private LinkedList<Message> msgBuffer = new LinkedList<Message>();
 
 	public MsgServer(int port) {
@@ -63,11 +64,13 @@ public class MsgServer {
 		private Socket socket;
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
+		private InetAddress clientAddress;
 
 		public ClientHandler(Socket socket) throws InterruptedException {
 			this.socket = socket;
 			try {
 
+				this.clientAddress = socket.getInetAddress();
 				oos = new ObjectOutputStream(socket.getOutputStream());
 				ois = new ObjectInputStream(socket.getInputStream());
 
@@ -80,16 +83,18 @@ public class MsgServer {
 		public void run() {
 			Message msg = null;
 			String username = null;
-			String[] tempUserReg = (String[])userReg.toArray();
+			Object obj;
+//			String[] tempUserReg = userReg.toArray();
 			
 			try{
-				for(int i=0; i<tempUserReg.length; i++){
-					if(ois.readObject().equals(tempUserReg[i])){
-						username = (String)ois.readObject();
+				obj = ois.readUTF();
+				for(int i=0; i<userReg.size(); i++){
+					if(obj == userReg.get(i)){
+						username = (String)obj;
 						break;
 					}else{
-						if(i == tempUserReg.length-1){
-							username = (String)ois.readObject();
+						if(i == userReg.size()-1){
+							username = (String)obj;
 							userReg.add(username);
 							break;
 						}
@@ -103,16 +108,24 @@ public class MsgServer {
 			while (true) {
 				try {
 					
+					obj = ois.readUTF();
 					
-					if (ois.readObject() instanceof Message) {
-						msg = (Message)ois.readObject();
+					
+					if (obj instanceof Message) {
+						msg = (Message)obj;
 					
 						msgBuffer.add(msg);
 						
 					}
+					
 
-					if (ois.readObject() instanceof String) {
-						if (ois.readObject().equals("getMsgBuffer")) {
+					if (obj instanceof String) {
+						
+						if(obj.equals("getUserReg")) {
+							oos.writeObject(userReg);
+						}
+						
+						if (obj.equals("getMsgBuffer")) {
 							Message[] messagesTemp = new Message[msgBuffer.size()];
 		
 							messagesTemp = (Message[]) msgBuffer.toArray();
@@ -146,13 +159,16 @@ public class MsgServer {
 							
 						} 
 					}
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		}
+	}
+	
+	public static void main(String[] args) {
+		new MsgServer(3500);
 	}
 
 }

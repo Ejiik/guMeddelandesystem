@@ -1,158 +1,126 @@
 package guMeddelandesystem;
 
-import javax.swing.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.*;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
-/**
- * Client class that connects to the server to send and receive data.
- * 
- * @author Isak Hartman
- *
- */
-public class Client extends Observable {
-	private String ip, name;
-	private int port;
+import javax.swing.ImageIcon;
+
+public class Client {
 	private UI ui;
-	private LinkedList<String> userReg = new LinkedList<String>();
-	private LinkedList<Message> msgBuffer = new LinkedList<Message>();
+	private int port;
+	private String ip;
+	private Socket socket;
+	private ObjectInputStream ois;
+	private ObjectOutputStream oos;
+	private String username;
+	private ArrayList<Message> messages;
+	private ArrayList<String> users;
 
-	public Client() {
-		ui = new UI();
-		new ReceiveMessage(this.ip, this.port).start();
+	public Client(UI ui) {
+		this.ui = ui;
 	}
 
-	public void setIP(String ip) {
-		this.ip = ip;
+	// -------------------------------------- Metoder som komunuserar med servern
+
+	public void getMessages() {
+		try {
+			oos.writeUTF("getMsgBuffer");
+			oos.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void getUsers(){
+		
+		try {
+			oos.writeUTF("getUserReg");
+			oos.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void setPort(int port) {
-		this.port = port;
+	// -------------------------------------
+
+	// --------------------------------------- Metoder som UI använder
+	public void setPort(int parseInt) {
+		this.port = parseInt;
 	}
 
-	public void setUsername(String name) {
-		this.name = name;
-	}
+	public void setUsername(String text) {
+		username = text;
 
-	/**
-	 * Returns time of the day using 24h local time.
-	 * 
-	 * @return a string on the form "HH:MM:SS"
-	 */
-	public String getTime() {
-		return Calendar.HOUR_OF_DAY + ":" + Calendar.MINUTE + ":" + Calendar.SECOND;
-	}
-
-	public void createMessage() {
-		Message message = new Message();
-		message.setMessage(ui.getMessageText());
-		message.setImageIcon((ImageIcon) ui.getImageIcon());
-		message.setSender(this.name);
-		message.setTimeSent(getTime());
-
-		new SendMessage(message, this.ip, this.port).start();
-	}
-
-	public void sendMessage(String message) {
-		ui.append(message);
-	}
-
-	public void sendImage(String filepath) {
-		ImageIcon image = new ImageIcon(filepath);
-		JOptionPane.showMessageDialog(null, image);
-		ui.displayImage(image);
 	}
 
 	public void connectToServer() {
-		new Connection().start();
+		try {
+			socket = new Socket(this.ip, this.port);
+			ois = new ObjectInputStream(socket.getInputStream());
+			oos = new ObjectOutputStream(socket.getOutputStream());
+			oos.writeUTF(username);
+			oos.flush();
+			
+			new Listener().start();
+			getUsers();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
-	/**
-	 * Inner class that sends a message to the server
-	 * 
-	 * @author Isak Hartman
-	 *
-	 */
-	private class SendMessage extends Thread {
-		private Message message;
-		private ObjectOutputStream oos;
-		private Socket socket;
+	public void setIP(String text) {
+		this.ip = text;
 
-		public SendMessage(Message message, String ip, int port) {
-			this.message = message;
-			try {
-				socket = new Socket(ip, port);
-				oos = new ObjectOutputStream(socket.getOutputStream());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		public void run() {
-			try {
-				oos.writeObject(message);
-				oos.flush();
-			} catch (Exception exception) {
-				exception.printStackTrace();
-			}
-			try {
-				socket.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 	}
-	
-	/**
-	 * Inner class that listens to the server for incoming messages
-	 * 
-	 * @author Isak Hartman
-	 *
-	 */
-	private class ReceiveMessage extends Thread {
-		private Message message;
-		private Socket socket;
-		private ObjectInputStream ois;
-		
-		public ReceiveMessage(String ip, int port) {
-			try {
-				socket = new Socket(ip, port);
-				ois = new ObjectInputStream(socket.getInputStream());
-			} catch (IOException e) {
-				System.out.print(e);
-			}
-		}
-		
+
+	public void createMessage() {
+		Message msg = new Message();
+		// msg.setMessage(message);
+		// msg.setImageIcon(icon);
+		// for(int i = 0; i < array.size(); i++){
+		//
+		// }
+
+	}
+
+	// --------------------------------------
+
+	private class Listener extends Thread {
+		private Object obj;
+
 		public void run() {
-			while (true) {
-				try {
-					this.message = (Message) ois.readObject();
-					setChanged();
-					notifyObservers(this.message);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
+
+			try {
+				while (true) {
+					obj = ois.readObject();
+					if (obj instanceof ArrayList<?>) {
+						users = (ArrayList<String>) obj;
+						ui.updateUserList(users);
+					} else if (obj instanceof Message[]) {
+
+					}
 				}
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
-	
-	/**
-	 * Inner class that tells the server that this client is connected and receives a list of connected users.
-	 * 
-	 * @author Isak Hartman
-	 *
-	 */
-	private class Connection extends Thread {
-		private ObjectInputStream ois;
-		private ObjectOutputStream oos;
-		
-		public void run() {
-			while(!Thread.interrupted()) {
-				
-			}
-		}
+
+	public static void main(String[] args) {
+		UI ui = new UI();
+		Client client = new Client(ui);
+		ui.startFrame(client);
 	}
+
 }
