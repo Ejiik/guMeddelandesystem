@@ -63,13 +63,11 @@ public class MsgServer {
 		private Socket socket;
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
-		private InetAddress clientAddress;
 
 		public ClientHandler(Socket socket) throws InterruptedException {
 			this.socket = socket;
 			try {
 
-				this.clientAddress = socket.getInetAddress();
 				oos = new ObjectOutputStream(socket.getOutputStream());
 				ois = new ObjectInputStream(socket.getInputStream());
 
@@ -155,10 +153,6 @@ public class MsgServer {
 				}
 			}
 		}
-	}
-	
-	public static void main(String[] args) {
-		new MsgServer(3500);
 	}
 
 }
