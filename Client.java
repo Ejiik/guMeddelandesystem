@@ -15,7 +15,8 @@ public class Client extends Observable {
 	private String ip, name;
 	private int port;
 	private UI ui;
-	
+	private LinkedList<String> userReg = new LinkedList<String>();
+	private LinkedList<Message> msgBuffer = new LinkedList<Message>();
 
 	public Client() {
 		ui = new UI(this);

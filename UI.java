@@ -22,8 +22,8 @@ public class UI extends JPanel{
 		private MouseAdapter mouseListener = new MouseAdapter();
 		private JTextField txtFieldUsername = new JTextField("Användarnamn");
 		private JButton btnLogin = new JButton("Logga in");
-		private JTextField txtFieldIP = new JTextField("IP-nummer");
-		private JTextField txtFieldPort = new JTextField("Portnummer");
+		private JTextField txtFieldIP = new JTextField("localhost");
+		private JTextField txtFieldPort = new JTextField("3500");
 		private JLabel lblImageViewer = new JLabel();
 		
 		private JTextArea txtAreaWriteMessage = new JTextArea();
@@ -47,8 +47,7 @@ public class UI extends JPanel{
 		private StyledDocument doc;
 		private Client client;
 		
-		public UI(Client client) {
-			this.client = client;
+		public UI() {
 			doc = (StyledDocument) textPaneMessage.getDocument();
 			setPreferredSize(new Dimension(1100,720));
 			setLayout(new BorderLayout());
@@ -221,7 +220,7 @@ public class UI extends JPanel{
 		 * @param client
 		 */
 		public void startFrame(Client client) {
-			UI ui = new UI(client);
+			this.client = client;
 			JFrame frame = new JFrame();
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.add(this);
@@ -357,6 +356,7 @@ public class UI extends JPanel{
 				if(!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() == null) {
 //					client.sendMessage(txtAreaWriteMessage.getText());
 					client.createMessage();
+					listUsers.
 					txtAreaWriteMessage.setText("");
 					System.out.println("Send message");
 				} else if (!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
