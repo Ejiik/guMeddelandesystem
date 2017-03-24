@@ -294,8 +294,10 @@ public class UI extends JPanel{
 		public void updateUserList(ArrayList<String> usernames) {
 			String tempUser = "";
 			for(int i = 0; i < usernames.size(); i++) {
+				if(!usernames.get(i).equals(txtFieldUsername.getText())
 				tempUser += usernames.get(i) + "\n";
 			}
+			lblUserList.setText(tempUser);
 		}
 		//Metod för att uppdatera listan med meddelande. Vet inte om den behövs eller ska vara här.
 		public void updateMessageList(Message[] messages) {
