@@ -41,6 +41,7 @@ public class UI extends JPanel{
 		private JScrollPane scrollMessages = new JScrollPane(listMessages);
 		private JScrollPane listScroll = new JScrollPane(lblUserList);
 		
+		private JTextField txtFieldReceiver = new JTextField();
 		private JTextPane textPaneMessage = new JTextPane();
 		private JScrollPane scrollMessage = new JScrollPane(textPaneMessage);
 		
@@ -111,6 +112,7 @@ public class UI extends JPanel{
 			panel.setPreferredSize(new Dimension(800,190));
 			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 //			txtAreaWriteMessage.setPreferredSize(new Dimension(800,180));
+			txtFieldReceiver.setPreferredSize(new Dimension(800,30));
 			txtAreaWriteMessage.setFont(font1);
 			txtAreaWriteMessage.setLineWrap(true);
 			txtAreaWriteMessage.setWrapStyleWord(true);
@@ -125,6 +127,7 @@ public class UI extends JPanel{
 			scrollMessages.setPreferredSize(new Dimension(800,500));
 			listMessages.addMouseListener(mouseListener);
 			panel.add(scrollMessages);
+			panel.add(txtFieldReceiver);
 //			panel.add(scrollChat);
 			panel.add(messageScroll);
 			return panel;
@@ -302,7 +305,7 @@ public class UI extends JPanel{
 		//Den här main-metoden ska givetvis inte vara här sen.
 	public static void main (String[] args) {
 		Client client = new Client();
-		UI ui = new UI(client);
+		UI ui = new UI();
 		JFrame frame = new JFrame("Meddelandesystem");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(ui);

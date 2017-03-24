@@ -19,7 +19,7 @@ public class Client extends Observable {
 	private LinkedList<Message> msgBuffer = new LinkedList<Message>();
 
 	public Client() {
-		ui = new UI(this);
+		ui = new UI();
 		new ReceiveMessage(this.ip, this.port).start();
 	}
 
