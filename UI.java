@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 /**
  * User interface for chat application
  * @author Viktor Ekström
@@ -35,9 +36,10 @@ public class UI extends JPanel{
 		
 		private JList<String> listUsers = new JList();
 		private JList<Message> listMessages = new JList();
+		private JLabel lblUserList = new JLabel();
 		
 		private JScrollPane scrollMessages = new JScrollPane(listMessages);
-		private JScrollPane listScroll = new JScrollPane(listUsers);
+		private JScrollPane listScroll = new JScrollPane(lblUserList);
 		
 		private JTextPane textPaneMessage = new JTextPane();
 		private JScrollPane scrollMessage = new JScrollPane(textPaneMessage);
@@ -156,9 +158,10 @@ public class UI extends JPanel{
 			panel.setLayout(new FlowLayout(FlowLayout.LEADING));
 			panel.setPreferredSize(new Dimension(290,720));
 			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			listUsers.setPreferredSize(new Dimension(250,200));
-			listUsers.setLayoutOrientation(JList.VERTICAL);
-			listUsers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			lblUserList.setPreferredSize(new Dimension(250,200));
+//			listUsers.setPreferredSize(new Dimension(250,200));
+//			listUsers.setLayoutOrientation(JList.VERTICAL);
+//			listUsers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 //			listUsers.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Användare"));
 //			listUsers.addListSelectionListener(listListener);
 			listScroll.setPreferredSize(new Dimension(250,200));
@@ -285,8 +288,11 @@ public class UI extends JPanel{
 			}
 		}
 		//Metod för att uppdatera listan med användare? Vet inte om den behövs eller ska vara här.
-		public void updateUserList(String[] usernames) {
-			listUsers.setListData(usernames);
+		public void updateUserList(ArrayList<String> usernames) {
+			String tempUser = "";
+			for(int i = 0; i < usernames.size(); i++) {
+				tempUser += usernames.get(i) + "\n";
+			}
 		}
 		//Metod för att uppdatera listan med meddelande. Vet inte om den behövs eller ska vara här.
 		public void updateMessageList(Message[] messages) {
@@ -356,7 +362,6 @@ public class UI extends JPanel{
 				if(!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() == null) {
 //					client.sendMessage(txtAreaWriteMessage.getText());
 					client.createMessage();
-					listUsers.
 					txtAreaWriteMessage.setText("");
 					System.out.println("Send message");
 				} else if (!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
