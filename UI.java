@@ -294,7 +294,7 @@ public class UI extends JPanel{
 		public void updateUserList(ArrayList<String> usernames) {
 			String tempUser = "";
 			for(int i = 0; i < usernames.size(); i++) {
-				if(!usernames.get(i).equals(txtFieldUsername.getText())
+				if(!usernames.get(i).equals(txtFieldUsername.getText()))
 				tempUser += usernames.get(i) + "\n";
 			}
 			lblUserList.setText(tempUser);
