@@ -69,29 +69,6 @@ public class UI extends JPanel{
 			btnRemoveImage.addActionListener(listener);
 		}
 		/**
-		 * Previously used panel for login.
-		 * @return
-		 */
-		private JPanel login() {
-			JPanel panel = new JPanel();
-//			panel.setLayout(new FlowLayout(FlowLayout.LEFT));
-//			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//			panel.setPreferredSize(new Dimension(1000,40));
-//			txtFieldUsername.setPreferredSize(new Dimension(200,30));
-//			txtFieldIP.setPreferredSize(new Dimension(200,30));
-//			txtFieldPort.setPreferredSize(new Dimension(200,30));
-//			btnLogin.setPreferredSize(new Dimension(120,30));
-//			txtFieldIP.setFont(font1);
-//			txtFieldPort.setFont(font1);
-//			txtFieldUsername.setFont(font1);
-//			btnLogin.setFont(font1);
-//			panel.add(txtFieldUsername);
-//			panel.add(txtFieldIP);
-//			panel.add(txtFieldPort);
-//			panel.add(btnLogin);
-			return panel;
-		}
-		/**
 		 * JPanel containing a list of messages and the box where one writes a message.
 		 * @return
 		 */
@@ -132,24 +109,6 @@ public class UI extends JPanel{
 			panel.add(messageScroll);
 			return panel;
 		}
-		/**
-		 * JPanel with inputs for sending a message, not currently used in this version.
-		 * @return
-		 */
-//		private JPanel inputPanel() {
-//			JPanel panel = new JPanel();
-//			panel.setLayout(new FlowLayout(FlowLayout.LEFT));
-//			panel.setPreferredSize(new Dimension(1000,190));
-//			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//			txtAreaWriteMessage.setPreferredSize(new Dimension(800,180));
-//			txtAreaWriteMessage.setFont(font1);
-//			txtAreaWriteMessage.setLineWrap(true);
-//			txtAreaWriteMessage.setWrapStyleWord(true);
-////			messageScroll.setPreferredSize(new Dimension(800,180));
-//			messageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-//			panel.add(messageScroll);
-//			return panel;
-//		}
 		/**
 		 * JPanel containing the input fields for username, ip, and port. Also a list of users
 		 * and the preview window for images that should be sent. Also contains buttons for choosing an iamge,
