@@ -46,6 +46,15 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
+	
+	public void sendMsg(Message msg){
+		try{
+			oos.writeObject(msg);
+			oos.flush();
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+	}
 
 	// -------------------------------------
 
@@ -84,12 +93,12 @@ public class Client {
 
 	public void createMessage() {
 		Message msg = new Message();
-		// msg.setMessage(message);
-		// msg.setImageIcon(icon);
+		 msg.setMessage(ui.getMessageText());
+		 msg.setImageIcon((ImageIcon)ui.getImageIcon());
 		// for(int i = 0; i < array.size(); i++){
 		//
 		// }
-
+		 sendMsg(msg); //if (resevers != 0)
 	}
 
 	// --------------------------------------
@@ -104,6 +113,7 @@ public class Client {
 					obj = ois.readObject();
 					if (obj instanceof ArrayList<?>) {
 						users = (ArrayList<String>) obj;
+						System.out.println("ArrayList<?> detected, size: " + users.size());
 						ui.updateUserList(users);
 					} else if (obj instanceof Message[]) {
 
