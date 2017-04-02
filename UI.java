@@ -320,7 +320,7 @@ public class UI extends JPanel{
 					txtFieldIP.setEditable(true);
 					txtFieldPort.setEditable(true);
 					System.out.println("Log out");
-					//controller-metod för att nollställa variabler?
+					client.logOut();
 				}
 			} else if (e.getSource() == btnSendMessage) {
 				if(!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() == null) {
