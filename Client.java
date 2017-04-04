@@ -55,9 +55,14 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
+	//Skickar meddelande till servern om att användaren har loggat ut
 	public void logOut() {
-		
+		try {
+			oos.writeUTF("logOut");
+			oos.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// -------------------------------------
@@ -120,7 +125,15 @@ public class Client {
 						System.out.println("ArrayList<?> detected, size: " + users.size());
 						ui.updateUserList(users);
 					} else if (obj instanceof Message[]) {
-
+						messages = (ArrayList<Message>) obj;
+						ui.updateMessageList(messages.toArray());
+					}
+					//Om servern ber om användarnamn så skickar klienten ut detta.
+					if(obj instanceof String) {
+						if(obj.equals("requestUsername")) {
+							oos.writeUTF(username);
+							oos.flush();
+						}
 					}
 				}
 			} catch (ClassNotFoundException e) {

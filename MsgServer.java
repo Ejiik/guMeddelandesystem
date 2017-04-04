@@ -157,7 +157,17 @@ public class MsgServer {
 							}
 							oos.writeObject(messages);
 							
-						} 
+						}
+						//Tar bort en användare ur userReg som loggar ut i sin klient.
+						if (obj.equals("logOut")) {
+							oos.writeUTF("requestUsername");
+							String removeUser = ois.readUTF();
+							for(int i = 0; i < userReg.size(); i++) {
+								if(userReg.get(i).equals(removeUser)) {
+									userReg.remove(i);
+								}
+							}
+						}
 					}
 
 				} catch (IOException e) {

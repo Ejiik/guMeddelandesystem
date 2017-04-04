@@ -259,8 +259,9 @@ public class UI extends JPanel{
 			lblUserList.setText(tempUser);
 		}
 		//Metod för att uppdatera listan med meddelande. Vet inte om den behövs eller ska vara här.
-		public void updateMessageList(Message[] messages) {
-			listMessages.setListData(messages);
+		public void updateMessageList(Object[] messages) {
+			Message[] messagelist = (Message[]) messages;
+			listMessages.setListData(messagelist);
 		}
 	
 		//Den här main-metoden ska givetvis inte vara här sen.
