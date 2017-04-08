@@ -81,7 +81,7 @@ public class MsgServer {
 			// String[] tempUserReg = userReg.toArray();
 
 			try {
-				username = (String) ois.readUTF();
+				username = (String) ois.readObject();
 				userReg.add(username);
 //				for (int i = 0; i < userReg.size(); i++) {
 //					if (username.equals(userReg.get(i))) {
@@ -103,7 +103,7 @@ public class MsgServer {
 
 			while (true) {
 				try {
-					obj = ois.readUTF();
+					obj = ois.readObject();
 					if (obj instanceof Message) {
 						msg = (Message) obj;
 						msgBuffer.add(msg);
@@ -148,19 +148,21 @@ public class MsgServer {
 						// Tar bort en användare ur userReg som loggar ut i sin
 						// klient.
 						if (obj.equals("logOut")) {
-							oos.writeUTF("requestUsername");
 							System.out.println("Server: Received logOut");
-							String removeUser = (String) ois.readUTF();
+							oos.writeObject("requestUsername");
+							System.out.println("Server: Requests username");
+							String removeUser = (String) ois.readObject();
+							System.out.println("Server: Received username: " + removeUser);
 							for (int i = 0; i < userReg.size(); i++) {
 								if (userReg.get(i).equals(removeUser)) {
 									userReg.remove(i);
-									System.out.println("User " + removeUser + "removed");
+									System.out.println("User " + removeUser + " removed");
 								}
 							}
 						}
 					}
 
-				} catch (IOException e) {
+				} catch (IOException | ClassNotFoundException e) {
 					e.printStackTrace();
 				}
 			}

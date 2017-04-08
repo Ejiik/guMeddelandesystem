@@ -1,5 +1,6 @@
 package guMeddelandesystem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 
@@ -8,7 +9,7 @@ import javax.swing.ImageIcon;
  * @author Isak Hartman
  *
  */
-public class Message {
+public class Message implements Serializable {
 	private String message;
 	private String timeSent, timeReceived;
 	private ImageIcon imageIcon;

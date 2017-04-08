@@ -29,8 +29,9 @@ public class Client {
 
 	public void getMessages() {
 		try {
-			oos.writeUTF("getMsgBuffer");
+			oos.writeObject("getMsgBuffer");
 			oos.flush();
+			System.out.println("Client: Wrote getMsgBuffer");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -38,8 +39,9 @@ public class Client {
 	
 	public void getUsers(){
 		try {
-			oos.writeUTF("getUserReg");
+			oos.writeObject("getUserReg");
 			oos.flush();
+			System.out.println("Client: Wrote getUserReg");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -56,7 +58,7 @@ public class Client {
 	//Skickar meddelande till servern om att användaren har loggat ut
 	public void logOut() {
 		try {
-			oos.writeUTF("logOut");
+			oos.writeObject("logOut");
 			oos.flush();
 			System.out.println("Client: Wrote logOut");
 		} catch (IOException e) {
@@ -81,7 +83,7 @@ public class Client {
 			socket = new Socket(this.ip, this.port);
 			ois = new ObjectInputStream(socket.getInputStream());
 			oos = new ObjectOutputStream(socket.getOutputStream());
-			oos.writeUTF(username);
+			oos.writeObject(username);
 			oos.flush();
 			
 			new Listener().start();
@@ -138,9 +140,10 @@ public class Client {
 					//Om servern ber om användarnamn så skickar klienten ut detta.
 					if(obj instanceof String) {
 						if(obj.equals("requestUsername")) {
-							oos.writeUTF(username);
-							oos.flush();
 							System.out.println("Client: Server asked username");
+							oos.writeObject(username);
+							oos.flush();
+							System.out.println("Client: Wrote username: " + username);
 						}
 					}
 				}
