@@ -51,9 +51,7 @@ public class MsgServer {
 				e.printStackTrace();
 				System.out.println("Server stoppad");
 			}
-
 		}
-
 	}
 
 	private class ClientHandler extends Thread {

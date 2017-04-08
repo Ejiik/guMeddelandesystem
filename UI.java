@@ -190,7 +190,7 @@ public class UI extends JPanel{
 		public void startFrame(Client client) {
 			this.client = client;
 			JFrame frame = new JFrame();
-			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.add(this);
 			frame.pack();
 			frame.setVisible(true);
@@ -244,7 +244,7 @@ public class UI extends JPanel{
 		 */
 		public void openMessage(int index) {
 			JFrame frame = new JFrame("Meddelande");
-			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			frame.add(messagePanel());
 			frame.pack();
 			frame.setVisible(true);
