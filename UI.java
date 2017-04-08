@@ -207,6 +207,10 @@ public class UI extends JPanel{
 			return lblImageViewer.getIcon();
 		}
 		
+		public String getReceipients() {
+			return txtFieldReceiver.getText();
+		}
+		
 		public int[] getUsersSelected() {
 			return listUsers.getSelectedIndices();
 		}
@@ -259,9 +263,8 @@ public class UI extends JPanel{
 			lblUserList.setText(tempUser);
 		}
 		//Metod för att uppdatera listan med meddelande. Vet inte om den behövs eller ska vara här.
-		public void updateMessageList(Object[] messages) {
-			Message[] messagelist = (Message[]) messages;
-			listMessages.setListData(messagelist);
+		public void updateMessageList(Message[] messages) {
+			listMessages.setListData(messages);
 		}
 	
 		//Den här main-metoden ska givetvis inte vara här sen.
@@ -309,7 +312,7 @@ public class UI extends JPanel{
 					txtFieldUsername.setEditable(false);
 					txtFieldIP.setEditable(false);
 					txtFieldPort.setEditable(false);
-					System.out.println("Log in");
+					System.out.println("UI: Log in");
 					client.setUsername(txtFieldUsername.getText());
 					client.setIP(txtFieldIP.getText());
 					client.setPort(Integer.parseInt(txtFieldPort.getText()));
@@ -320,7 +323,7 @@ public class UI extends JPanel{
 					txtFieldUsername.setEditable(true);
 					txtFieldIP.setEditable(true);
 					txtFieldPort.setEditable(true);
-					System.out.println("Log out");
+					System.out.println("UI: Log out");
 					client.logOut();
 				}
 			} else if (e.getSource() == btnSendMessage) {
@@ -328,20 +331,20 @@ public class UI extends JPanel{
 //					client.sendMessage(txtAreaWriteMessage.getText());
 					client.createMessage();
 					txtAreaWriteMessage.setText("");
-					System.out.println("Send message");
+					System.out.println("UI: Send message");
 				} else if (!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
 //					client.sendMessage(txtAreaWriteMessage.getText());
 					client.createMessage();
 					txtAreaWriteMessage.setText("");
 //					client.sendImage(filepath);
 					lblImageViewer.setIcon(null);
-					System.out.println("Send message and or image");
+					System.out.println("UI: Send message and or image");
 				} else if (txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
 					if(filepath != null) {
 						client.createMessage();
 //						client.sendImage(filepath);
 						lblImageViewer.setIcon(null);
-						System.out.println("filepath is not null");
+						System.out.println("UI: filepath is not null");
 					}
 				}
 			} else if (e.getSource() == btnChooseFile) {
@@ -349,12 +352,12 @@ public class UI extends JPanel{
 				if(returnval == JFileChooser.APPROVE_OPTION) {
 					filepath = fileChooser.getSelectedFile().getPath();
 					displayPreview(new ImageIcon(fileChooser.getSelectedFile().getPath()));
-					System.out.println("Chose image");
+					System.out.println("UI: Chose image");
 				}
 			} else if (e.getSource() == btnRemoveImage) {
 				lblImageViewer.setIcon(null);
 				filepath = null;
-				System.out.println("Removed image");
+				System.out.println("UI: Removed image");
 			}
 		}
 		

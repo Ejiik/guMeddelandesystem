@@ -18,8 +18,8 @@ public class Client {
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 	private String username;
-	private ArrayList<Message> messages;
-	private ArrayList<String> users;
+	private ArrayList<Message> messages = new ArrayList<Message>();
+	private ArrayList<String> users = new ArrayList<String>();
 
 	public Client(UI ui) {
 		this.ui = ui;
@@ -34,11 +34,9 @@ public class Client {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	public void getUsers(){
-		
 		try {
 			oos.writeUTF("getUserReg");
 			oos.flush();
@@ -60,6 +58,7 @@ public class Client {
 		try {
 			oos.writeUTF("logOut");
 			oos.flush();
+			System.out.println("Client: Wrote logOut");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -87,6 +86,7 @@ public class Client {
 			
 			new Listener().start();
 			getUsers();
+			getMessages();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -102,12 +102,15 @@ public class Client {
 
 	public void createMessage() {
 		Message msg = new Message();
-		 msg.setMessage(ui.getMessageText());
-		 msg.setImageIcon((ImageIcon)ui.getImageIcon());
-		// for(int i = 0; i < array.size(); i++){
-		//
-		// }
-		 sendMsg(msg); //if (resevers != 0)
+		ArrayList<String> receiverslist = new ArrayList<String>(); 
+		msg.setMessage(ui.getMessageText());
+		msg.setImageIcon((ImageIcon)ui.getImageIcon());
+		String[] receivers = ui.getReceipients().split(",");
+		for(int i = 0; i < receivers.length; i++) {
+			receiverslist.add(receivers[i]);
+		}
+		msg.setReceivers(receiverslist);
+		sendMsg(msg); //if (resevers != 0)
 	}
 
 	// --------------------------------------
@@ -116,23 +119,28 @@ public class Client {
 		private Object obj;
 
 		public void run() {
-
 			try {
 				while (true) {
+//					getUsers();
 					obj = ois.readObject();
 					if (obj instanceof ArrayList<?>) {
 						users = (ArrayList<String>) obj;
-						System.out.println("ArrayList<?> detected, size: " + users.size());
+						System.out.println("Client: ArrayList<?> for users received, size: " + users.size());
 						ui.updateUserList(users);
 					} else if (obj instanceof Message[]) {
-						messages = (ArrayList<Message>) obj;
-						ui.updateMessageList(messages.toArray());
+						Message[] tempMessagesArray = (Message[]) obj;
+						for(int i = 0; i < tempMessagesArray.length; i++) {
+							messages.add(tempMessagesArray[i]);
+						}
+						System.out.println("Client: ArrayList for message buffer received, size: " + messages.size());
+						ui.updateMessageList(tempMessagesArray);
 					}
 					//Om servern ber om användarnamn så skickar klienten ut detta.
 					if(obj instanceof String) {
 						if(obj.equals("requestUsername")) {
 							oos.writeUTF(username);
 							oos.flush();
+							System.out.println("Client: Server asked username");
 						}
 					}
 				}
@@ -144,10 +152,10 @@ public class Client {
 		}
 	}
 
-	public static void main(String[] args) {
-		UI ui = new UI();
-		Client client = new Client(ui);
-		ui.startFrame(client);
-	}
+//	public static void main(String[] args) {
+//		UI ui = new UI();
+//		Client client = new Client(ui);
+//		ui.startFrame(client);
+//	}
 
 }
