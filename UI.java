@@ -33,6 +33,7 @@ public class UI extends JPanel{
 		private JFileChooser fileChooser = new JFileChooser();
 		private JButton btnRemoveImage = new JButton("Ångra bildval");
 		private JScrollPane messageScroll = new JScrollPane(txtAreaWriteMessage);
+		private JButton btnUpdateMessages = new JButton("Hämta meddelande");
 		
 		private JList<String> listUsers = new JList();
 		private JList<Message> listMessages = new JList();
@@ -67,6 +68,7 @@ public class UI extends JPanel{
 			btnChooseFile.addActionListener(listener);
 			btnSendMessage.addActionListener(listener);
 			btnRemoveImage.addActionListener(listener);
+			btnUpdateMessages.addActionListener(listener);
 		}
 		/**
 		 * JPanel containing a list of messages and the box where one writes a message.
@@ -151,6 +153,7 @@ public class UI extends JPanel{
 			panel.add(txtFieldIP);
 			panel.add(txtFieldPort);
 			panel.add(btnLogin);
+			panel.add(btnUpdateMessages);
 			panel.add(listScroll);
 			panel.add(lblImageViewer);
 			panel.add(btnChooseFile);
@@ -187,7 +190,7 @@ public class UI extends JPanel{
 		public void startFrame(Client client) {
 			this.client = client;
 			JFrame frame = new JFrame();
-			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			frame.add(this);
 			frame.pack();
 			frame.setVisible(true);
@@ -261,10 +264,12 @@ public class UI extends JPanel{
 				tempUser += usernames.get(i) + "\n";
 			}
 			lblUserList.setText(tempUser);
+			System.out.println("UI: Updated userlist");
 		}
 		//Metod för att uppdatera listan med meddelande. Vet inte om den behövs eller ska vara här.
 		public void updateMessageList(Message[] messages) {
 			listMessages.setListData(messages);
+			System.out.println("UI: Messagse updated");
 		}
 	
 		//Den här main-metoden ska givetvis inte vara här sen.
@@ -358,6 +363,9 @@ public class UI extends JPanel{
 				lblImageViewer.setIcon(null);
 				filepath = null;
 				System.out.println("UI: Removed image");
+			} else if (e.getSource() == btnUpdateMessages) {
+				client.getMessages();
+				System.out.println("UI: Get messages pressed");
 			}
 		}
 		

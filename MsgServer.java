@@ -143,7 +143,6 @@ public class MsgServer {
 							}
 							oos.writeObject(messages);
 							System.out.println("Server: List of messages sent");
-
 						}
 						// Tar bort en användare ur userReg som loggar ut i sin
 						// klient.
@@ -161,7 +160,6 @@ public class MsgServer {
 							}
 						}
 					}
-
 				} catch (IOException | ClassNotFoundException e) {
 					e.printStackTrace();
 				}
