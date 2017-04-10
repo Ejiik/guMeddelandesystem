@@ -63,5 +63,9 @@ public class Message implements Serializable {
 	public void setReceivers(ArrayList<String> receivers) {
 		this.receivers = receivers;
 	}
+	
+	public String toString() {
+		return timeReceived + " | " + sender;
+	}
 
 }

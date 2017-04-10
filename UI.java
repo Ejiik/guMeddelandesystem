@@ -34,6 +34,7 @@ public class UI extends JPanel{
 		private JButton btnRemoveImage = new JButton("Ångra bildval");
 		private JScrollPane messageScroll = new JScrollPane(txtAreaWriteMessage);
 		private JButton btnUpdateMessages = new JButton("Hämta meddelande");
+		private JButton btnUpdateUsers = new JButton("Uppdatera användare");
 		
 		private JList<String> listUsers = new JList();
 		private JList<Message> listMessages = new JList();
@@ -69,6 +70,7 @@ public class UI extends JPanel{
 			btnSendMessage.addActionListener(listener);
 			btnRemoveImage.addActionListener(listener);
 			btnUpdateMessages.addActionListener(listener);
+			btnUpdateUsers.addActionListener(listener);
 		}
 		/**
 		 * JPanel containing a list of messages and the box where one writes a message.
@@ -154,6 +156,7 @@ public class UI extends JPanel{
 			panel.add(txtFieldPort);
 			panel.add(btnLogin);
 			panel.add(btnUpdateMessages);
+			panel.add(btnUpdateUsers);
 			panel.add(listScroll);
 			panel.add(lblImageViewer);
 			panel.add(btnChooseFile);
@@ -197,9 +200,8 @@ public class UI extends JPanel{
 		}
 		//Funkar inte just nu?
 		public void displayImage(ImageIcon imageIcon) {
-			JOptionPane.showMessageDialog(null, imageIcon);
+//			JOptionPane.showMessageDialog(null, imageIcon);
 			textPane.insertIcon(imageIcon);
-			append("\n");
 		}
 		
 		public String getMessageText() {
@@ -248,10 +250,10 @@ public class UI extends JPanel{
 			frame.add(messagePanel());
 			frame.pack();
 			frame.setVisible(true);
-			append(listMessages.getModel().getElementAt(index).getTimeSent());
-			append(listMessages.getModel().getElementAt(index).getTimeReceived());
-			append(listMessages.getModel().getElementAt(index).getMessage());
-			append(listMessages.getModel().getElementAt(index).getSender());
+			append("Meddelande skickat: " + listMessages.getModel().getElementAt(index).getTimeSent() + "\n");
+			append("Meddelande mottaget: " + listMessages.getModel().getElementAt(index).getTimeReceived() + "\n");
+			append("Från: " + listMessages.getModel().getElementAt(index).getSender() + "\n");
+			append("\n" + listMessages.getModel().getElementAt(index).getMessage() + "\n");
 			if(listMessages.getModel().getElementAt(index).getImageIcon() != null) {
 				displayImage(listMessages.getModel().getElementAt(index).getImageIcon());
 			}
@@ -261,7 +263,7 @@ public class UI extends JPanel{
 			String tempUser = "";
 			for(int i = 0; i < usernames.size(); i++) {
 				if(!usernames.get(i).equals(txtFieldUsername.getText()))
-				tempUser += usernames.get(i) + "\n";
+				tempUser += "\n" + usernames.get(i) + "\n";
 			}
 			lblUserList.setText(tempUser);
 			System.out.println("UI: Updated userlist");
@@ -269,7 +271,7 @@ public class UI extends JPanel{
 		//Metod för att uppdatera listan med meddelande. Vet inte om den behövs eller ska vara här.
 		public void updateMessageList(Message[] messages) {
 			listMessages.setListData(messages);
-			System.out.println("UI: Messagse updated");
+			System.out.println("UI: Messages updated");
 		}
 	
 		//Den här main-metoden ska givetvis inte vara här sen.
@@ -333,21 +335,17 @@ public class UI extends JPanel{
 				}
 			} else if (e.getSource() == btnSendMessage) {
 				if(!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() == null) {
-//					client.sendMessage(txtAreaWriteMessage.getText());
 					client.createMessage();
 					txtAreaWriteMessage.setText("");
 					System.out.println("UI: Send message");
 				} else if (!txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
-//					client.sendMessage(txtAreaWriteMessage.getText());
 					client.createMessage();
 					txtAreaWriteMessage.setText("");
-//					client.sendImage(filepath);
 					lblImageViewer.setIcon(null);
 					System.out.println("UI: Send message and or image");
 				} else if (txtAreaWriteMessage.getText().equals("") && lblImageViewer.getIcon() != null) {
 					if(filepath != null) {
 						client.createMessage();
-//						client.sendImage(filepath);
 						lblImageViewer.setIcon(null);
 						System.out.println("UI: filepath is not null");
 					}
@@ -366,6 +364,9 @@ public class UI extends JPanel{
 			} else if (e.getSource() == btnUpdateMessages) {
 				client.getMessages();
 				System.out.println("UI: Get messages pressed");
+			} else if(e.getSource() == btnUpdateUsers) {
+				client.getUsers();
+				System.out.println("UI: Get users pressed");
 			}
 		}
 		

@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedList;
 
 public class MsgServer {
@@ -21,6 +22,12 @@ public class MsgServer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public String dateAndTime() {
+		String time = String.valueOf(Calendar.DAY_OF_MONTH) + "/" + String.valueOf(Calendar.MONTH) + " " +
+				String.valueOf(Calendar.HOUR_OF_DAY) + ":" + String.valueOf(Calendar.MINUTE);
+		return time;
 	}
 
 	private class StartServer extends Thread {
@@ -43,7 +50,6 @@ public class MsgServer {
 						e.printStackTrace();
 						socket.close();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -76,11 +82,22 @@ public class MsgServer {
 			Message msg;
 			String username = new String();
 			Object obj;
+			boolean userInReg = false;
 			// String[] tempUserReg = userReg.toArray();
 
 			try {
 				username = (String) ois.readObject();
-				userReg.add(username);
+				for(int i = 0; i < userReg.size(); i++) {
+					if(username.equals(userReg.get(i))) {
+						userInReg = true;
+					}
+				}
+				if(!userInReg) {
+					userReg.add(username);
+					System.out.println("Server: Added user " + username);
+				} else {
+					System.out.println("Server: Did not add a user");
+				}
 //				for (int i = 0; i < userReg.size(); i++) {
 //					if (username.equals(userReg.get(i))) {
 ////						username = (String) obj;
@@ -104,6 +121,7 @@ public class MsgServer {
 					obj = ois.readObject();
 					if (obj instanceof Message) {
 						msg = (Message) obj;
+						msg.setTimeReceived(dateAndTime());
 						msgBuffer.add(msg);
 						System.out.println("Server: Message added to buffer");
 					}

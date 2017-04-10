@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
@@ -74,8 +75,7 @@ public class Client {
 	}
 
 	public void setUsername(String text) {
-		username = text;
-
+		this.username = text;
 	}
 
 	public void connectToServer() {
@@ -107,12 +107,20 @@ public class Client {
 		ArrayList<String> receiverslist = new ArrayList<String>(); 
 		msg.setMessage(ui.getMessageText());
 		msg.setImageIcon((ImageIcon)ui.getImageIcon());
+		msg.setSender(username);
 		String[] receivers = ui.getReceipients().split(",");
 		for(int i = 0; i < receivers.length; i++) {
 			receiverslist.add(receivers[i]);
 		}
 		msg.setReceivers(receiverslist);
+		msg.setTimeSent(dateAndTime());
 		sendMsg(msg); //if (resevers != 0)
+	}
+	
+	public String dateAndTime() {
+		String time = String.valueOf(Calendar.DAY_OF_MONTH) + "/" + String.valueOf(Calendar.MONTH) + " " +
+				String.valueOf(Calendar.HOUR_OF_DAY) + ":" + String.valueOf(Calendar.MINUTE);
+		return time;
 	}
 
 	// --------------------------------------
