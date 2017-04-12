@@ -44,16 +44,15 @@ public class UI extends JPanel{
 		private JScrollPane listScroll = new JScrollPane(lblUserList);
 		
 		private JTextField txtFieldReceiver = new JTextField();
-		private JTextPane textPaneMessage = new JTextPane();
-		private JScrollPane scrollMessage = new JScrollPane(textPaneMessage);
+		
 		
 		private JTextPane textPane = new JTextPane();
 		private JScrollPane scrollChat = new JScrollPane(textPane);
 		private StyledDocument doc;
+		private Style style;
 		private Client client;
 		
 		public UI() {
-			doc = (StyledDocument) textPaneMessage.getDocument();
 			setPreferredSize(new Dimension(1100,720));
 			setLayout(new BorderLayout());
 			add(chatPanel(), BorderLayout.CENTER);
@@ -93,6 +92,7 @@ public class UI extends JPanel{
 			panel.setPreferredSize(new Dimension(800,190));
 			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 //			txtAreaWriteMessage.setPreferredSize(new Dimension(800,180));
+			txtFieldReceiver.setFont(font1);
 			txtFieldReceiver.setPreferredSize(new Dimension(800,30));
 			txtAreaWriteMessage.setFont(font1);
 			txtAreaWriteMessage.setLineWrap(true);
@@ -124,13 +124,13 @@ public class UI extends JPanel{
 			panel.setLayout(new FlowLayout(FlowLayout.LEADING));
 			panel.setPreferredSize(new Dimension(290,720));
 			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			lblUserList.setPreferredSize(new Dimension(250,200));
+//			lblUserList.setPreferredSize(new Dimension(250,200));
 //			listUsers.setPreferredSize(new Dimension(250,200));
 //			listUsers.setLayoutOrientation(JList.VERTICAL);
 //			listUsers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 //			listUsers.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Användare"));
 //			listUsers.addListSelectionListener(listListener);
-			listScroll.setPreferredSize(new Dimension(250,200));
+			listScroll.setPreferredSize(new Dimension(250,150));
 			listScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 			listScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			lblImageViewer.setPreferredSize(new Dimension(250,250));
@@ -181,6 +181,12 @@ public class UI extends JPanel{
 		 */
 		private JPanel messagePanel() {
 			JPanel panel = new JPanel();
+			JTextPane textPaneMessage = new JTextPane();
+			JScrollPane scrollMessage = new JScrollPane(textPaneMessage);
+			doc = (StyledDocument) textPaneMessage.getDocument();
+			style = doc.addStyle("AddImage",null);
+			textPaneMessage.setFont(font1);
+			textPaneMessage.setEditable(false);
 			panel.setPreferredSize(new Dimension(900,720));
 			scrollMessage.setPreferredSize(new Dimension(900,720));
 			panel.add(scrollMessage);
@@ -200,8 +206,13 @@ public class UI extends JPanel{
 		}
 		//Funkar inte just nu?
 		public void displayImage(ImageIcon imageIcon) {
+			JLabel imageLbl = new JLabel(imageIcon);
+			textPane.insertComponent(imageLbl);
 //			JOptionPane.showMessageDialog(null, imageIcon);
-			textPane.insertIcon(imageIcon);
+//			StyleConstants.setComponent(style, imageLbl);
+//			StyleConstants.setIcon(style, imageIcon);
+//			textPane.insertIcon(imageIcon);
+			
 		}
 		
 		public String getMessageText() {
@@ -236,8 +247,6 @@ public class UI extends JPanel{
 		 * @param imageIcon The ImageIcon that is to be displayed.
 		 */
 		public void displayPreview(ImageIcon imageIcon) {
-			//Skulle egentligen vilja att bilden skulle skalas till labeln
-			//men kan inte riktigt lista ut hur man gör.
 			lblImageViewer.setIcon(imageIcon);
 		}
 		/**
@@ -263,7 +272,7 @@ public class UI extends JPanel{
 			String tempUser = "";
 			for(int i = 0; i < usernames.size(); i++) {
 				if(!usernames.get(i).equals(txtFieldUsername.getText()))
-				tempUser += "\n" + usernames.get(i) + "\n";
+				tempUser += "<html><br>" + usernames.get(i) + "</html>";
 			}
 			lblUserList.setText(tempUser);
 			System.out.println("UI: Updated userlist");
@@ -274,16 +283,6 @@ public class UI extends JPanel{
 			System.out.println("UI: Messages updated");
 		}
 	
-		//Den här main-metoden ska givetvis inte vara här sen.
-//	public static void main (String[] args) {
-//		Client client = new Client();
-//		UI ui = new UI();
-//		JFrame frame = new JFrame("Meddelandesystem");
-//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.add(ui);
-//		frame.pack();
-//		frame.setVisible(true);
-//	}
 	/**
 	 * Defines the events of mouse clicks on the JList containing messages.
 	 * @author Viktor
@@ -369,7 +368,5 @@ public class UI extends JPanel{
 				System.out.println("UI: Get users pressed");
 			}
 		}
-		
 	}
-
 }

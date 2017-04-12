@@ -25,8 +25,9 @@ public class MsgServer {
 	}
 	
 	public String dateAndTime() {
-		String time = String.valueOf(Calendar.DAY_OF_MONTH) + "/" + String.valueOf(Calendar.MONTH) + " " +
-				String.valueOf(Calendar.HOUR_OF_DAY) + ":" + String.valueOf(Calendar.MINUTE);
+		Calendar cal = Calendar.getInstance();
+		String time = String.valueOf(cal.DAY_OF_MONTH) + "/" + String.valueOf(cal.MONTH) + " " +
+				String.valueOf(cal.HOUR_OF_DAY) + ":" + String.valueOf(cal.MINUTE);
 		return time;
 	}
 
