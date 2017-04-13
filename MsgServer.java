@@ -10,17 +10,52 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 
-public class MsgServer {
+public class MsgServer extends Thread {
+	private Thread thread;
 	private int port;
 	private ArrayList<String> userReg = new ArrayList<String>();
 	private LinkedList<Message> msgBuffer = new LinkedList<Message>();
+	private ServerSocket serverSocket;
+	private Socket socket;
 
 	public MsgServer(int port) {
 		this.port = port;
 		try {
-			new StartServer(port).start();
-		} catch (InterruptedException e) {
+			serverSocket = new ServerSocket(port);
+		} catch (IOException e) {
 			e.printStackTrace();
+		}
+//		try {
+//			new StartServer(port).start();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+	}
+	
+	public void start() {
+		if(thread == null) {
+			thread = new Thread(this);
+			thread.start();
+		}
+	}
+	
+	public void run() {
+		System.out.println("Server startad");
+		try {
+			while (true) {
+				try {
+					socket = serverSocket.accept();
+					new ClientHandler(socket);
+				} catch (IOException e) {
+					e.printStackTrace();
+					socket.close();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Server stoppad");
 		}
 	}
 	
@@ -31,35 +66,35 @@ public class MsgServer {
 		return time;
 	}
 
-	private class StartServer extends Thread {
-		private int port;
-
-		public StartServer(int port) throws InterruptedException {
-			this.port = port;
-		}
-
-		public void run() {
-			Socket socket = null;
-			System.out.println("Server startad");
-			try {
-				ServerSocket serverSocket = new ServerSocket(port);
-				while (true) {
-					try {
-						socket = serverSocket.accept();
-						new ClientHandler(socket);
-					} catch (IOException e) {
-						e.printStackTrace();
-						socket.close();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.out.println("Server stoppad");
-			}
-		}
-	}
+//	private class StartServer extends Thread {
+//		private int port;
+//
+//		public StartServer(int port) throws InterruptedException {
+//			this.port = port;
+//		}
+//
+//		public void run() {
+//			Socket socket = null;
+//			System.out.println("Server startad");
+//			try {
+//				ServerSocket serverSocket = new ServerSocket(port);
+//				while (true) {
+//					try {
+//						socket = serverSocket.accept();
+//						new ClientHandler(socket);
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//						socket.close();
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				System.out.println("Server stoppad");
+//			}
+//		}
+//	}
 
 	private class ClientHandler extends Thread {
 		private Socket socket;

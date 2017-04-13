@@ -5,6 +5,7 @@ import javax.swing.SwingUtilities;
 public class Testklass {
 	public static void main(String[] args) {
 		MsgServer server = new MsgServer(3500);
+		server.start();
 		
 		UI ui = new UI();
 		UI ui2 = new UI();

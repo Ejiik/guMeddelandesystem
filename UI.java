@@ -272,7 +272,7 @@ public class UI extends JPanel{
 			String tempUser = "";
 			for(int i = 0; i < usernames.size(); i++) {
 				if(!usernames.get(i).equals(txtFieldUsername.getText()))
-				tempUser += "<html><br>" + usernames.get(i) + "</html>";
+				tempUser += " " + usernames.get(i) + " ";
 			}
 			lblUserList.setText(tempUser);
 			System.out.println("UI: Updated userlist");
