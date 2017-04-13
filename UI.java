@@ -61,9 +61,6 @@ public class UI extends JPanel{
 			setLayout(new BorderLayout());
 			add(chatPanel(), BorderLayout.CENTER);
 			add(serverPanel(), BorderLayout.EAST);
-//			add(leftPanel(), BorderLayout.WEST);
-//			add(login(), BorderLayout.NORTH);
-//			add(inputPanel(), BorderLayout.SOUTH);
 			addListeners();
 		}
 
@@ -80,22 +77,10 @@ public class UI extends JPanel{
 		 * @return
 		 */
 		private JPanel chatPanel() {
-//			JPanel panel = new JPanel();
-//			panel.setLayout(new FlowLayout());
-//			panel.setPreferredSize(new Dimension(900,800));
-//			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//			doc = (StyledDocument) textPane.getDocument();
-//			textPane.setFont(font1);
-//			scrollChat.setPreferredSize(new Dimension(900,800));
-//			scrollChat.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-//			textPane.setPreferredSize(new Dimension(900,800));
-//			textPane.setEditable(false);
-//			panel.add(scrollChat);
 			JPanel panel = new JPanel();
 			panel.setLayout(new FlowLayout(FlowLayout.LEFT));
 			panel.setPreferredSize(new Dimension(800,190));
 			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//			txtAreaWriteMessage.setPreferredSize(new Dimension(800,180));
 			txtFieldReceiver.setFont(font1);
 			txtFieldReceiver.setPreferredSize(new Dimension(800,30));
 			txtAreaWriteMessage.setFont(font1);
@@ -103,17 +88,10 @@ public class UI extends JPanel{
 			txtAreaWriteMessage.setWrapStyleWord(true);
 			messageScroll.setPreferredSize(new Dimension(800,180));
 			messageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-//			textPane.setPreferredSize(new Dimension(800,180));
 			textPane.setFont(font1);
-//			scrollChat.setPreferredSize(new Dimension(800,180));
-//			scrollChat.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-//			scrollChat.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-//			panel.add(tabbedPane);
 			scrollMessages.setPreferredSize(new Dimension(800,500));
 			listMessages.addMouseListener(mouseListener);
 			panel.add(scrollMessages);
-//			panel.add(txtFieldReceiver);
-//			panel.add(scrollChat);
 			panel.add(messageScroll);
 			return panel;
 		}
@@ -128,12 +106,9 @@ public class UI extends JPanel{
 			panel.setLayout(new FlowLayout(FlowLayout.LEADING));
 			panel.setPreferredSize(new Dimension(290,720));
 			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//			lblUserList.setPreferredSize(new Dimension(250,200));
-//			listUsers.setPreferredSize(new Dimension(250,200));
 			listUsers.setLayoutOrientation(JList.VERTICAL);
 			listUsers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 			listUsers.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Användare"));
-//			listUsers.addListSelectionListener(listListener);
 			listScroll.setPreferredSize(new Dimension(250,150));
 			listScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 			listScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -148,7 +123,6 @@ public class UI extends JPanel{
 			txtFieldIP.setFont(font1);
 			txtFieldPort.setFont(font1);
 			txtFieldUsername.setFont(font1);
-//			btnLogin.setFont(font1);
 			btnUpdateMessages.setPreferredSize(new Dimension(220,30));
 			btnUpdateUsers.setPreferredSize(new Dimension(220,30));
 			btnUpdateMessages.setFont(font1);
@@ -212,15 +186,8 @@ public class UI extends JPanel{
 			frame.pack();
 			frame.setVisible(true);
 		}
-		//Funkar inte just nu?
+
 		public void displayImage(ImageIcon imageIcon) {
-//			Image image = imageIcon.getImage();
-//			image.getScaledInstance(300, 300, Image.SCALE_SMOOTH);
-//			Image scaledImage = image.getScaledInstance(300, 300, Image.SCALE_SMOOTH);
-//			ImageIcon scaledIcon = new ImageIcon(scaledImage);
-//			JLabel imageLbl = new JLabel(imageIcon);
-//			textPane.insertComponent(imageLbl);
-//			JOptionPane.showMessageDialog(null, imageIcon);
 			StyleConstants.setIcon(style, imageIcon);
 			try {
 				doc.insertString(doc.getLength(), "blabla", style);
@@ -228,10 +195,8 @@ public class UI extends JPanel{
 				e.printStackTrace();
 			}
 			textPane.insertIcon(imageIcon);
-			
 		}
 	
-		
 		public String getMessageText() {
 			return txtAreaWriteMessage.getText(); 
 		}
@@ -268,10 +233,6 @@ public class UI extends JPanel{
 		 * @param imageIcon The ImageIcon that is to be displayed.
 		 */
 		public void displayPreview(ImageIcon imageIcon) {
-//			Image image = imageIcon.getImage();
-//			image.getScaledInstance(300, 300, Image.SCALE_SMOOTH);
-//			Image scaledImage = image.getScaledInstance(300, 300, Image.SCALE_SMOOTH);
-//			ImageIcon scaledIcon = new ImageIcon(scaledImage);
 			lblImageViewer.setIcon(imageIcon);
 		}
 		/**

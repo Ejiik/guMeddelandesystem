@@ -29,11 +29,6 @@ public class MsgServer extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//		try {
-//			new StartServer(port).start();
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
 	}
 	
 	public void start() {
@@ -122,7 +117,6 @@ public class MsgServer extends Thread {
 			String username = new String();
 			Object obj;
 			boolean userInReg = false;
-			// String[] tempUserReg = userReg.toArray();
 
 			try {
 				username = (String) ois.readObject();
@@ -137,20 +131,6 @@ public class MsgServer extends Thread {
 				} else {
 					System.out.println("Server: Did not add a user");
 				}
-//				for (int i = 0; i < userReg.size(); i++) {
-//					if (username.equals(userReg.get(i))) {
-////						username = (String) obj;
-//						System.out.println("Server: Did not add a user");
-////						break;
-//					} else {
-////						if (i == userReg.size() - 1) {
-////							username = (String) obj;
-//							userReg.add(username);
-//							System.out.println("Server: Added user " + username);
-////							break;
-////						}
-//					}
-//				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -167,7 +147,6 @@ public class MsgServer extends Thread {
 					if (obj instanceof String) {
 						if (obj.equals("getUserReg")) {
 							oos.writeUnshared(userReg);
-//							oos.writeObject(userReg);
 							System.out.println("Server: User list sent to client");
 						}
 						if (obj.equals("getMsgBuffer")) {
@@ -222,9 +201,4 @@ public class MsgServer extends Thread {
 			}
 		}
 	}
-
-	// public static void main(String[] args) {
-	// new MsgServer(3500);
-	// }
-
 }

@@ -102,9 +102,8 @@ public class Client {
 		}
 	}
 
-	public void setIP(String text) {
-		this.ip = text;
-
+	public void setIP(String ip) {
+		this.ip = ip;
 	}
 
 	public void createMessage() {
@@ -132,7 +131,6 @@ public class Client {
 		public void run() {
 			try {
 				while (true) {
-//					getUsers();
 					obj = ois.readObject();
 					if (obj instanceof ArrayList<?>) {
 						users = (ArrayList<String>) obj;
@@ -168,11 +166,4 @@ public class Client {
 			}
 		}
 	}
-
-//	public static void main(String[] args) {
-//		UI ui = new UI();
-//		Client client = new Client(ui);
-//		ui.startFrame(client);
-//	}
-
 }
