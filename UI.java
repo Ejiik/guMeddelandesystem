@@ -2,6 +2,10 @@ package guMeddelandesystem;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.*;
@@ -22,7 +26,7 @@ public class UI extends JPanel{
 		private ButtonListener listener = new ButtonListener();
 		private MouseAdapter mouseListener = new MouseAdapter();
 		private JTextField txtFieldUsername = new JTextField("Användarnamn");
-		private JButton btnLogin = new JButton("Logga in");
+		private JButton btnLogin = new JButton("O");
 		private JTextField txtFieldIP = new JTextField("localhost");
 		private JTextField txtFieldPort = new JTextField("3500");
 		private JLabel lblImageViewer = new JLabel();
@@ -33,15 +37,15 @@ public class UI extends JPanel{
 		private JFileChooser fileChooser = new JFileChooser();
 		private JButton btnRemoveImage = new JButton("Ångra bildval");
 		private JScrollPane messageScroll = new JScrollPane(txtAreaWriteMessage);
-		private JButton btnUpdateMessages = new JButton("Hämta meddelande");
-		private JButton btnUpdateUsers = new JButton("Uppdatera användare");
+		private JButton btnUpdateMessages = new JButton("Updat meddelande");
+		private JButton btnUpdateUsers = new JButton("Hämta användare");
 		
 		private JList<String> listUsers = new JList();
 		private JList<Message> listMessages = new JList();
-		private JLabel lblUserList = new JLabel();
+//		private JLabel lblUserList = new JLabel();
 		
 		private JScrollPane scrollMessages = new JScrollPane(listMessages);
-		private JScrollPane listScroll = new JScrollPane(lblUserList);
+		private JScrollPane listScroll = new JScrollPane(listUsers);
 		
 		private JTextField txtFieldReceiver = new JTextField();
 		
@@ -108,7 +112,7 @@ public class UI extends JPanel{
 			scrollMessages.setPreferredSize(new Dimension(800,500));
 			listMessages.addMouseListener(mouseListener);
 			panel.add(scrollMessages);
-			panel.add(txtFieldReceiver);
+//			panel.add(txtFieldReceiver);
 //			panel.add(scrollChat);
 			panel.add(messageScroll);
 			return panel;
@@ -126,9 +130,9 @@ public class UI extends JPanel{
 			panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 //			lblUserList.setPreferredSize(new Dimension(250,200));
 //			listUsers.setPreferredSize(new Dimension(250,200));
-//			listUsers.setLayoutOrientation(JList.VERTICAL);
-//			listUsers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-//			listUsers.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Användare"));
+			listUsers.setLayoutOrientation(JList.VERTICAL);
+			listUsers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			listUsers.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Användare"));
 //			listUsers.addListSelectionListener(listListener);
 			listScroll.setPreferredSize(new Dimension(250,150));
 			listScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -140,11 +144,15 @@ public class UI extends JPanel{
 			txtFieldUsername.setPreferredSize(new Dimension(200,30));
 			txtFieldIP.setPreferredSize(new Dimension(200,30));
 			txtFieldPort.setPreferredSize(new Dimension(200,30));
-			btnLogin.setPreferredSize(new Dimension(120,30));
+			btnLogin.setPreferredSize(new Dimension(50,30));
 			txtFieldIP.setFont(font1);
 			txtFieldPort.setFont(font1);
 			txtFieldUsername.setFont(font1);
-			btnLogin.setFont(font1);
+//			btnLogin.setFont(font1);
+			btnUpdateMessages.setPreferredSize(new Dimension(220,30));
+			btnUpdateUsers.setPreferredSize(new Dimension(220,30));
+			btnUpdateMessages.setFont(font1);
+			btnUpdateUsers.setFont(font1);
 			btnSendMessage.setPreferredSize(new Dimension(220,30));
 			btnChooseFile.setPreferredSize(new Dimension(220,30));
 			btnSendMessage.setFont(font1);
@@ -152,9 +160,9 @@ public class UI extends JPanel{
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG, JPEG, GIF, PNG", "jpg", "gif", "png", "jpeg");
 			fileChooser.setFileFilter(filter);
 			panel.add(txtFieldUsername);
+			panel.add(btnLogin);
 			panel.add(txtFieldIP);
 			panel.add(txtFieldPort);
-			panel.add(btnLogin);
 			panel.add(btnUpdateMessages);
 			panel.add(btnUpdateUsers);
 			panel.add(listScroll);
@@ -231,6 +239,10 @@ public class UI extends JPanel{
 			return listUsers.getSelectedIndices();
 		}
 		
+		public ArrayList<String> getSelectedUsers() {
+			return (ArrayList<String>)listUsers.getSelectedValuesList();
+		}
+		
 		/**
 		 * Add the string input at the last line of the JTextPane that the StyledDocument is assigned to.
 		 * @param str String to be added to the chat.
@@ -269,12 +281,12 @@ public class UI extends JPanel{
 		}
 		//Metod för att uppdatera listan med användare? Vet inte om den behövs eller ska vara här.
 		public void updateUserList(ArrayList<String> usernames) {
-			String tempUser = "";
+			String[] tempUser = new String[usernames.size()];
 			for(int i = 0; i < usernames.size(); i++) {
 				if(!usernames.get(i).equals(txtFieldUsername.getText()))
-				tempUser += " " + usernames.get(i) + " ";
+				tempUser[i] = usernames.get(i);
 			}
-			lblUserList.setText(tempUser);
+			listUsers.setListData(tempUser);
 			System.out.println("UI: Updated userlist");
 		}
 		//Metod för att uppdatera listan med meddelande. Vet inte om den behövs eller ska vara här.
@@ -307,14 +319,14 @@ public class UI extends JPanel{
 		public void mouseReleased(MouseEvent arg0) {
 		}
 	}
-	
+		
 	private class ButtonListener implements ActionListener {
 		int returnval = 0;
 		String filepath;
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == btnLogin) {
-				if(btnLogin.getText().equals("Logga in")) {
-					btnLogin.setText("Logga ut");
+				if(btnLogin.getText().equals("O")) {
+					btnLogin.setText("X");
 					txtFieldUsername.setEditable(false);
 					txtFieldIP.setEditable(false);
 					txtFieldPort.setEditable(false);
@@ -324,8 +336,8 @@ public class UI extends JPanel{
 					client.setPort(Integer.parseInt(txtFieldPort.getText()));
 					client.connectToServer();
 
-				} else if(btnLogin.getText().equals("Logga ut")) {
-					btnLogin.setText("Logga in");
+				} else if(btnLogin.getText().equals("X")) {
+					btnLogin.setText("O");
 					txtFieldUsername.setEditable(true);
 					txtFieldIP.setEditable(true);
 					txtFieldPort.setEditable(true);

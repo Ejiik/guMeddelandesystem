@@ -5,6 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -21,6 +25,8 @@ public class Client {
 	private String username;
 	private ArrayList<Message> messages = new ArrayList<Message>();
 	private ArrayList<String> users = new ArrayList<String>();
+	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+	private LocalDateTime dateAndTime;
 
 	public Client(UI ui) {
 		this.ui = ui;
@@ -103,23 +109,19 @@ public class Client {
 
 	public void createMessage() {
 		Message msg = new Message();
-		ArrayList<String> receiverslist = new ArrayList<String>(); 
+		ArrayList<String> receiverslist = ui.getSelectedUsers(); 
 		msg.setMessage(ui.getMessageText());
 		msg.setImageIcon((ImageIcon)ui.getImageIcon());
 		msg.setSender(username);
-		String[] receivers = ui.getReceipients().split(",");
-		for(int i = 0; i < receivers.length; i++) {
-			receiverslist.add(receivers[i]);
-		}
 		msg.setReceivers(receiverslist);
 		msg.setTimeSent(dateAndTime());
 		sendMsg(msg); //if (resevers != 0)
 	}
 	
 	public String dateAndTime() {
-		String time = String.valueOf(Calendar.DAY_OF_MONTH) + "/" + String.valueOf(Calendar.MONTH) + " " +
-				String.valueOf(Calendar.HOUR_OF_DAY) + ":" + String.valueOf(Calendar.MINUTE);
-		return time;
+		dateAndTime = LocalDateTime.now();
+		String date = dateTimeFormatter.format(dateAndTime);
+		return date;
 	}
 
 	// --------------------------------------

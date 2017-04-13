@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -17,6 +19,8 @@ public class MsgServer extends Thread {
 	private LinkedList<Message> msgBuffer = new LinkedList<Message>();
 	private ServerSocket serverSocket;
 	private Socket socket;
+	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+	private LocalDateTime dateAndTime;
 
 	public MsgServer(int port) {
 		this.port = port;
@@ -60,10 +64,9 @@ public class MsgServer extends Thread {
 	}
 	
 	public String dateAndTime() {
-		Calendar cal = Calendar.getInstance();
-		String time = String.valueOf(cal.DAY_OF_MONTH) + "/" + String.valueOf(cal.MONTH) + " " +
-				String.valueOf(cal.HOUR_OF_DAY) + ":" + String.valueOf(cal.MINUTE);
-		return time;
+		dateAndTime = LocalDateTime.now();
+		String date = dateTimeFormatter.format(dateAndTime);
+		return date;
 	}
 
 //	private class StartServer extends Thread {
@@ -163,7 +166,8 @@ public class MsgServer extends Thread {
 					}
 					if (obj instanceof String) {
 						if (obj.equals("getUserReg")) {
-							oos.writeObject(userReg);
+							oos.writeUnshared(userReg);
+//							oos.writeObject(userReg);
 							System.out.println("Server: User list sent to client");
 						}
 						if (obj.equals("getMsgBuffer")) {
