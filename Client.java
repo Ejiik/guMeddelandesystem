@@ -137,7 +137,12 @@ public class Client {
 					if (obj instanceof ArrayList<?>) {
 						users = (ArrayList<String>) obj;
 						System.out.println("Client: ArrayList<?> for users received, size: " + users.size());
-						ui.updateUserList(users);
+						String[] tempUser = new String[users.size()];
+						for(int i = 0; i < users.size(); i++) {
+							if(!users.get(i).equals(username))
+							tempUser[i] = users.get(i);
+						}
+						ui.updateUserList(tempUser);
 					} else if (obj instanceof Message[]) {
 						Message[] tempMessagesArray = (Message[]) obj;
 						for(int i = 0; i < tempMessagesArray.length; i++) {

@@ -214,14 +214,23 @@ public class UI extends JPanel{
 		}
 		//Funkar inte just nu?
 		public void displayImage(ImageIcon imageIcon) {
-			JLabel imageLbl = new JLabel(imageIcon);
-			textPane.insertComponent(imageLbl);
+//			Image image = imageIcon.getImage();
+//			image.getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+//			Image scaledImage = image.getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+//			ImageIcon scaledIcon = new ImageIcon(scaledImage);
+//			JLabel imageLbl = new JLabel(imageIcon);
+//			textPane.insertComponent(imageLbl);
 //			JOptionPane.showMessageDialog(null, imageIcon);
-//			StyleConstants.setComponent(style, imageLbl);
-//			StyleConstants.setIcon(style, imageIcon);
-//			textPane.insertIcon(imageIcon);
+			StyleConstants.setIcon(style, imageIcon);
+			try {
+				doc.insertString(doc.getLength(), "blabla", style);
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
+			textPane.insertIcon(imageIcon);
 			
 		}
+	
 		
 		public String getMessageText() {
 			return txtAreaWriteMessage.getText(); 
@@ -259,6 +268,10 @@ public class UI extends JPanel{
 		 * @param imageIcon The ImageIcon that is to be displayed.
 		 */
 		public void displayPreview(ImageIcon imageIcon) {
+//			Image image = imageIcon.getImage();
+//			image.getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+//			Image scaledImage = image.getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+//			ImageIcon scaledIcon = new ImageIcon(scaledImage);
 			lblImageViewer.setIcon(imageIcon);
 		}
 		/**
@@ -280,13 +293,8 @@ public class UI extends JPanel{
 			}
 		}
 		//Metod för att uppdatera listan med användare? Vet inte om den behövs eller ska vara här.
-		public void updateUserList(ArrayList<String> usernames) {
-			String[] tempUser = new String[usernames.size()];
-			for(int i = 0; i < usernames.size(); i++) {
-				if(!usernames.get(i).equals(txtFieldUsername.getText()))
-				tempUser[i] = usernames.get(i);
-			}
-			listUsers.setListData(tempUser);
+		public void updateUserList(String[] users) {
+			listUsers.setListData(users);
 			System.out.println("UI: Updated userlist");
 		}
 		//Metod för att uppdatera listan med meddelande. Vet inte om den behövs eller ska vara här.
