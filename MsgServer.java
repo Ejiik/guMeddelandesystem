@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
 
 public class MsgServer extends Thread {
 	private Thread thread;
@@ -21,11 +23,14 @@ public class MsgServer extends Thread {
 	private Socket socket;
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 	private LocalDateTime dateAndTime;
+	private final static Logger logger = Logger.getLogger("requests");
+	private FileHandler requests;
 
 	public MsgServer(int port) {
 		this.port = port;
 		try {
 			serverSocket = new ServerSocket(port);
+			requests = new FileHandler("files/requestLog.log");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -93,6 +98,7 @@ public class MsgServer extends Thread {
 //			}
 //		}
 //	}
+	
 
 	private class ClientHandler extends Thread {
 		private Socket socket;
@@ -111,12 +117,11 @@ public class MsgServer extends Thread {
 				e.printStackTrace();
 			}
 		}
-
+		
 		public void run() {
 			Message msg;
 			String username = new String();
 			Object obj;
-			int userSize, msgSize;
 			boolean userInReg = false;
 
 			try {
@@ -129,29 +134,21 @@ public class MsgServer extends Thread {
 				if(!userInReg) {
 					userReg.add(username);
 					System.out.println("Server: Added user " + username);
-					oos.writeObject("userListChange");
-					oos.flush();
-					System.out.println("Server: Notified users changed");
 				} else {
 					System.out.println("Server: Did not add a user");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
+			
 			while (true) {
-				try {
-					userSize = userReg.size();
-					msgSize = msgBuffer.size();
+				try {	
 					obj = ois.readObject();
 					if (obj instanceof Message) {
 						msg = (Message) obj;
 						msg.setTimeRecievedServer(dateAndTime());
 						msgBuffer.add(msg);
 						System.out.println("Server: Message added to buffer");
-						oos.writeObject("msgBufferChange");
-						oos.flush();
-						System.out.println("Server: Notified messages changed");
 					}
 					if (obj instanceof String) {
 						if (obj.equals("getUserReg")) {
@@ -202,8 +199,6 @@ public class MsgServer extends Thread {
 							oos.flush();
 							System.out.println("Server: List of messages sent");
 						}
-						// Tar bort en användare ur userReg som loggar ut i sin
-						// klient.
 						if (obj.equals("logOut")) {
 							System.out.println("Server: Received logOut");
 							oos.writeObject("requestUsername");
@@ -216,7 +211,7 @@ public class MsgServer extends Thread {
 									System.out.println("User " + removeUser + " removed");
 								}
 							}
-						}	
+						}
 					}
 				} catch (IOException | ClassNotFoundException e) {
 					e.printStackTrace();

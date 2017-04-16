@@ -15,7 +15,12 @@ import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
-
+/**
+ * Client class for communicating with the messages server. Can connect to server and receiever
+ * list of online users. Can send and receive messages.
+ * @author Viktor Ekström, Erik Johansson, Simon Börjesson
+ *
+ */
 public class Client {
 	private UI ui;
 	private int port;
@@ -28,13 +33,17 @@ public class Client {
 	private ArrayList<String> users = new ArrayList<String>();
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 	private LocalDateTime dateAndTime;
-
+/**
+ * Constructor requiring a passed UI used for interacting with the system.
+ * @param ui The UI model to be used.
+ */
 	public Client(UI ui) {
 		this.ui = ui;
 	}
 
-	// -------------------------------------- Metoder som komunuserar med servern
-
+/**
+ * Will send a request to server asking for the list of messages belonging to this user.
+ */
 	public void getMessages() {
 		try {
 			oos.writeObject("getMsgBuffer");
@@ -44,7 +53,9 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
+/**
+ * Will send a request to server asking for the list of online users.
+ */
 	public void getUsers(){
 		try {
 			oos.writeObject("getUserReg");
@@ -54,7 +65,11 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * Used to send a message to the server, meant for some other user. The message is of Message type and 
+	 * created elsewhere but is passed as a parameter.  
+	 * @param msg Message to be sent.
+	 */
 	public void sendMsg(Message msg){
 		try{
 			oos.writeObject(msg);
@@ -64,7 +79,9 @@ public class Client {
 		}
 	}
 	
-	//Skickar meddelande till servern om att användaren har loggat ut
+	/**
+	 * Sends the server a message that the user has logged out of the system.
+	 */
 	public void logOut() {
 		try {
 			oos.writeObject("logOut");
@@ -75,21 +92,34 @@ public class Client {
 		}
 	}
 
-	// -------------------------------------
-
-	// --------------------------------------- Metoder som UI använder
-	public void setPort(int parseInt) {
-		this.port = parseInt;
+	/**
+	 * Sets the port the server is listening on. Used when connecting to the server.
+	 * @param port Port server is listening on.
+	 */
+	public void setPort(int port) {
+		this.port = port;
 	}
-	
+	/**
+	 * Sets the ip for the server the client wants to connect to.
+	 * @param ip The servers ip.
+	 */
 	public void setIP(String ip) {
 		this.ip = ip;
 	}
-
+	/**
+	 * The choosen username of the client, displayed for all other users on the system
+	 * and used as a receiver and sender name when sending messages.
+	 * @param text
+	 */
 	public void setUsername(String text) {
 		this.username = text;
 	}
-
+	/**
+	 * Connects to the server that was choosen in the UI, depending on input. Called when logging in
+	 * on the UI. 
+	 * Will tell the server what username is choosen and starts the thread that will listen for
+	 * messages from the server. Asks for users and messages to be displayed immediately.
+	 */
 	public void connectToServer() {
 		try {
 			socket = new Socket(this.ip, this.port);
@@ -97,7 +127,6 @@ public class Client {
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			oos.writeObject(username);
 			oos.flush();
-			
 			new Listener().start();
 			getUsers();
 			getMessages();
@@ -107,7 +136,10 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * Will create a new message with the information added from the UI. The message will be
+	 * sent as long as it has any receivers added.
+	 */
 	public void createMessage() {
 		Message msg = new Message();
 		ArrayList<String> receiverslist = ui.getSelectedUsers(); 
@@ -119,18 +151,26 @@ public class Client {
 			sendMsg(msg);
 		}
 	}
-	
+	/**
+	 * Gets the current date and time of day. Used for noting when a message was received by the client.
+	 * @return date The date and time of day by the format defined.
+	 */
 	public String dateAndTime() {
 		dateAndTime = LocalDateTime.now();
 		String date = dateTimeFormatter.format(dateAndTime);
 		return date;
 	}
-
-	// --------------------------------------
-
+	/**
+	 * The thread that handles all communciation with the server. Will listen for new objects
+	 * and handle them appropriately. Usually meaning updating the UI with the new information.
+	 * @author Viktor Ekström, Simon Börjesson, Erik Johansson
+	 *
+	 */
 	private class Listener extends Thread {
 		private Object obj;
-
+		/**
+		 * The run method of the thread.
+		 */
 		public void run() {
 			try {
 				while (true) {
@@ -155,7 +195,6 @@ public class Client {
 						System.out.println("Client: ArrayList for message buffer received, size: " + messages.size());
 						ui.updateMessageList(tempMessagesArray);
 					}
-					//Om servern ber om användarnamn så skickar klienten ut detta.
 					if(obj instanceof String) {
 						if(obj.equals("requestUsername")) {
 							System.out.println("Client: Server asked username");
@@ -163,13 +202,10 @@ public class Client {
 							oos.flush();
 							System.out.println("Client: Wrote username: " + username);
 						}
-						if(obj.equals("userListChange")) {
+						if(obj.equals("changes")) {
+							System.out.println("Client " + username +": Notified of user changed");
 							getUsers();
-							System.out.println("Client: Asked for users because notified of change");
-						}
-						if(obj.equals("msgBufferChange")) {
 							getMessages();
-							System.out.println("Client: Asked for messages because notified of change");
 						}
 					}
 				}
