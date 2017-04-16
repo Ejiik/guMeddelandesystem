@@ -245,8 +245,8 @@ public class UI extends JPanel{
 			frame.add(messagePanel());
 			frame.pack();
 			frame.setVisible(true);
-			append("Meddelande skickat: " + listMessages.getModel().getElementAt(index).getTimeSent() + "\n");
-			append("Meddelande mottaget: " + listMessages.getModel().getElementAt(index).getTimeReceived() + "\n");
+			append("Meddelande mottaget av server: " + listMessages.getModel().getElementAt(index).getTimeRecievedServer() + "\n");
+			append("Meddelande mottaget av klient: " + listMessages.getModel().getElementAt(index).getTimeReceivedClient() + "\n");
 			append("Från: " + listMessages.getModel().getElementAt(index).getSender() + "\n");
 			append("\n" + listMessages.getModel().getElementAt(index).getMessage() + "\n");
 			if(listMessages.getModel().getElementAt(index).getImageIcon() != null) {

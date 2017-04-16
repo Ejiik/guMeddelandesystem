@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 
 public class Client {
 	private UI ui;
@@ -62,6 +63,7 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
+	
 	//Skickar meddelande till servern om att användaren har loggat ut
 	public void logOut() {
 		try {
@@ -78,6 +80,10 @@ public class Client {
 	// --------------------------------------- Metoder som UI använder
 	public void setPort(int parseInt) {
 		this.port = parseInt;
+	}
+	
+	public void setIP(String ip) {
+		this.ip = ip;
 	}
 
 	public void setUsername(String text) {
@@ -102,10 +108,6 @@ public class Client {
 		}
 	}
 
-	public void setIP(String ip) {
-		this.ip = ip;
-	}
-
 	public void createMessage() {
 		Message msg = new Message();
 		ArrayList<String> receiverslist = ui.getSelectedUsers(); 
@@ -113,8 +115,9 @@ public class Client {
 		msg.setImageIcon((ImageIcon)ui.getImageIcon());
 		msg.setSender(username);
 		msg.setReceivers(receiverslist);
-		msg.setTimeSent(dateAndTime());
-		sendMsg(msg); //if (resevers != 0)
+		if(!receiverslist.isEmpty()) {
+			sendMsg(msg);
+		}
 	}
 	
 	public String dateAndTime() {
@@ -144,6 +147,9 @@ public class Client {
 					} else if (obj instanceof Message[]) {
 						Message[] tempMessagesArray = (Message[]) obj;
 						for(int i = 0; i < tempMessagesArray.length; i++) {
+							if(tempMessagesArray[i].getTimeReceivedClient() == null) {
+								tempMessagesArray[i].setTimeReceivedClient(dateAndTime());
+							}
 							messages.add(tempMessagesArray[i]);
 						}
 						System.out.println("Client: ArrayList for message buffer received, size: " + messages.size());
@@ -156,6 +162,14 @@ public class Client {
 							oos.writeObject(username);
 							oos.flush();
 							System.out.println("Client: Wrote username: " + username);
+						}
+						if(obj.equals("userListChange")) {
+							getUsers();
+							System.out.println("Client: Asked for users because notified of change");
+						}
+						if(obj.equals("msgBufferChange")) {
+							getMessages();
+							System.out.println("Client: Asked for messages because notified of change");
 						}
 					}
 				}

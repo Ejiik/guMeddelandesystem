@@ -116,6 +116,7 @@ public class MsgServer extends Thread {
 			Message msg;
 			String username = new String();
 			Object obj;
+			int userSize, msgSize;
 			boolean userInReg = false;
 
 			try {
@@ -128,6 +129,9 @@ public class MsgServer extends Thread {
 				if(!userInReg) {
 					userReg.add(username);
 					System.out.println("Server: Added user " + username);
+					oos.writeObject("userListChange");
+					oos.flush();
+					System.out.println("Server: Notified users changed");
 				} else {
 					System.out.println("Server: Did not add a user");
 				}
@@ -137,46 +141,65 @@ public class MsgServer extends Thread {
 
 			while (true) {
 				try {
+					userSize = userReg.size();
+					msgSize = msgBuffer.size();
 					obj = ois.readObject();
 					if (obj instanceof Message) {
 						msg = (Message) obj;
-						msg.setTimeReceived(dateAndTime());
+						msg.setTimeRecievedServer(dateAndTime());
 						msgBuffer.add(msg);
 						System.out.println("Server: Message added to buffer");
+						oos.writeObject("msgBufferChange");
+						oos.flush();
+						System.out.println("Server: Notified messages changed");
 					}
 					if (obj instanceof String) {
 						if (obj.equals("getUserReg")) {
 							oos.writeUnshared(userReg);
+							oos.flush();
 							System.out.println("Server: User list sent to client");
 						}
 						if (obj.equals("getMsgBuffer")) {
-							Message[] messagesTemp = new Message[msgBuffer.size()];
-							for(int i = 0; i < messagesTemp.length; i++) {
-								messagesTemp[i] = msgBuffer.get(i);
-							}
-							
-							for (int i = 0; i < messagesTemp.length; i++) {
-								if (!messagesTemp[i].getReceivers().contains(username)) {
-									messagesTemp[i] = null;
-								}
-							}
-
 							int nbrOfMessages = 0;
-							for (int i = 0; i < messagesTemp.length; i++) {
-								if (messagesTemp[i] == null) {
-									if (!(i + 1 > messagesTemp.length)) {
-										messagesTemp[i] = messagesTemp[i + 1];
-										messagesTemp[i + 1] = null;
-									}
-								} else {
+							for(int i = 0; i < msgBuffer.size(); i++) {
+								if(msgBuffer.get(i).getReceivers().contains(username)) {
 									nbrOfMessages++;
 								}
 							}
 							Message[] messages = new Message[nbrOfMessages];
-							for (int i = 0; i < nbrOfMessages; i++) {
-								messages[i] = messagesTemp[i];
+							for(int i = 0; i < nbrOfMessages; i++) {
+								if(msgBuffer.get(i).getReceivers().contains(username)) {
+									messages[i] = msgBuffer.get(i);
+								}
 							}
+//							Message[] messagesTemp = new Message[msgBuffer.size()];
+//							for(int i = 0; i < messagesTemp.length; i++) {
+//								messagesTemp[i] = msgBuffer.get(i);
+//							}
+//							
+//							for (int i = 0; i < messagesTemp.length; i++) {
+//								if (!messagesTemp[i].getReceivers().contains(username)) {
+//									messagesTemp[i] = null;
+//								}
+//							}
+//
+//							int nbrOfMessages = 0;
+//							for (int i = 0; i < messagesTemp.length; i++) {
+//								if (messagesTemp[i] == null) {
+//									if (!(i + 1 > messagesTemp.length)) {
+//										messagesTemp[i] = messagesTemp[i + 1];
+//										messagesTemp[i + 1] = null;
+//									}
+//								} else {
+//									nbrOfMessages++;
+//								}
+//							}
+//							Message[] messages = new Message[nbrOfMessages];
+//							for (int i = 0; i < nbrOfMessages; i++) {
+//								messages[i] = messagesTemp[i];
+//							}
 							oos.writeObject(messages);
+							oos.flush();
 							System.out.println("Server: List of messages sent");
 						}
 						// Tar bort en användare ur userReg som loggar ut i sin
@@ -193,7 +216,7 @@ public class MsgServer extends Thread {
 									System.out.println("User " + removeUser + " removed");
 								}
 							}
-						}
+						}	
 					}
 				} catch (IOException | ClassNotFoundException e) {
 					e.printStackTrace();

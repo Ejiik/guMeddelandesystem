@@ -11,7 +11,7 @@ import javax.swing.ImageIcon;
  */
 public class Message implements Serializable {
 	private String message;
-	private String timeSent, timeReceived;
+	private String timeServer, timeClient;
 	private ImageIcon imageIcon;
 	private String sender;
 	private ArrayList<String> receivers; //annan list-typ kanske? 
@@ -24,20 +24,20 @@ public class Message implements Serializable {
 		this.message = message;
 	}
 
-	public String getTimeSent() {
-		return timeSent;
+	public String getTimeRecievedServer() {
+		return timeServer;
 	}
 
-	public void setTimeSent(String timeSent) {
-		this.timeSent = timeSent;
+	public void setTimeRecievedServer(String timeServer) {
+		this.timeServer = timeServer;
 	}
 
-	public String getTimeReceived() {
-		return timeReceived;
+	public String getTimeReceivedClient() {
+		return timeClient;
 	}
 
-	public void setTimeReceived(String timeReceived) {
-		this.timeReceived = timeReceived;
+	public void setTimeReceivedClient(String timeReceived) {
+		this.timeClient = timeReceived;
 	}
 
 	public ImageIcon getImageIcon() {
@@ -65,7 +65,7 @@ public class Message implements Serializable {
 	}
 	
 	public String toString() {
-		return timeReceived + " | " + sender;
+		return timeClient + " | " + sender;
 	}
 
 }
