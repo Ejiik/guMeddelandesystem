@@ -193,7 +193,11 @@ public class Client {
 							messages.add(tempMessagesArray[i]);
 						}
 						System.out.println("Client: ArrayList for message buffer received, size: " + messages.size());
-						ui.updateMessageList(tempMessagesArray);
+						Message[] listMessages = new Message[messages.size()];
+						for(int i = 0; i < messages.size(); i++) {
+							listMessages[i] = messages.get(i);
+						}
+						ui.updateMessageList(listMessages);
 					}
 					if(obj instanceof String) {
 						if(obj.equals("requestUsername")) {

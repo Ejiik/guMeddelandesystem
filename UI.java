@@ -37,7 +37,7 @@ public class UI extends JPanel {
 	private JFileChooser fileChooser = new JFileChooser();
 	private JButton btnRemoveImage = new JButton("Ångra bildval");
 	private JScrollPane messageScroll = new JScrollPane(txtAreaWriteMessage);
-	private JButton btnUpdateMessages = new JButton("Updat meddelande");
+	private JButton btnUpdateMessages = new JButton("Hämta meddelande");
 	private JButton btnUpdateUsers = new JButton("Hämta användare");
 	private JList<String> listUsers = new JList();
 	private JList<Message> listMessages = new JList();
@@ -130,6 +130,8 @@ public class UI extends JPanel {
 		btnChooseFile.setPreferredSize(new Dimension(220, 30));
 		btnSendMessage.setFont(font1);
 		btnChooseFile.setFont(font1);
+		btnUpdateUsers.setEnabled(false);
+		btnUpdateMessages.setEnabled(false);
 		btnSendMessage.setEnabled(false);
 		btnChooseFile.setEnabled(false);
 		btnRemoveImage.setEnabled(false);
@@ -336,6 +338,8 @@ public class UI extends JPanel {
 					btnSendMessage.setEnabled(true);
 					btnChooseFile.setEnabled(true);
 					btnRemoveImage.setEnabled(true);
+					btnUpdateUsers.setEnabled(true);
+					btnUpdateMessages.setEnabled(true);
 					System.out.println("UI: Log in");
 					client.setUsername(txtFieldUsername.getText());
 					client.setIP(txtFieldIP.getText());
@@ -349,6 +353,8 @@ public class UI extends JPanel {
 					btnSendMessage.setEnabled(false);
 					btnChooseFile.setEnabled(false);
 					btnRemoveImage.setEnabled(false);
+					btnUpdateUsers.setEnabled(false);
+					btnUpdateMessages.setEnabled(false);
 					System.out.println("UI: Log out");
 					client.logOut();
 				}

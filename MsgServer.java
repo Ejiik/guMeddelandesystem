@@ -164,9 +164,11 @@ public class MsgServer extends Thread {
 								}
 							}
 							Message[] messages = new Message[nbrOfMessages];
-							for(int i = 0; i < nbrOfMessages; i++) {
-								if(msgBuffer.get(i).getReceivers().contains(username)) {
-									messages[i] = msgBuffer.get(i);
+							for(int j = 0; j < messages.length; j++) {
+								for(int i = 0; i < msgBuffer.size(); i++) {
+									if(msgBuffer.get(i).getReceivers().contains(username)) {
+										messages[j] = msgBuffer.remove(i);
+									}
 								}
 							}
 //							Message[] messagesTemp = new Message[msgBuffer.size()];
