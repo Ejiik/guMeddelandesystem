@@ -186,7 +186,7 @@ public class Client {
 						ui.updateUserList(tempUser);
 					} else if (obj instanceof Message[]) {
 						Message[] tempMessagesArray = (Message[]) obj;
-						for(int i = 0; i < tempMessagesArray.length; i++) {
+						for(int i = 0; i < tempMessagesArray.length; i++) {		
 							if(tempMessagesArray[i].getTimeReceivedClient() == null) {
 								tempMessagesArray[i].setTimeReceivedClient(dateAndTime());
 							}
