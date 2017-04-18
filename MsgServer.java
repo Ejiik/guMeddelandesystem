@@ -19,6 +19,7 @@ public class MsgServer extends Thread {
 	private int port;
 	private ArrayList<String> userReg = new ArrayList<String>();
 	private LinkedList<Message> msgBuffer = new LinkedList<Message>();
+	private ArrayList<User> users = new ArrayList<User>();
 	private ServerSocket serverSocket;
 	private Socket socket;
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
@@ -126,13 +127,14 @@ public class MsgServer extends Thread {
 
 			try {
 				username = (String) ois.readObject();
-				for(int i = 0; i < userReg.size(); i++) {
-					if(username.equals(userReg.get(i))) {
+				for(int i = 0; i < users.size(); i++) {
+					if(username.equals(users.get(i).getUsername())) {
 						userInReg = true;
 					}
 				}
 				if(!userInReg) {
 					userReg.add(username);
+					users.add(new User(username));
 					System.out.println("Server: Added user " + username);
 				} else {
 					System.out.println("Server: Did not add a user");
@@ -147,7 +149,13 @@ public class MsgServer extends Thread {
 					if (obj instanceof Message) {
 						msg = (Message) obj;
 						msg.setTimeRecievedServer(dateAndTime());
-						msgBuffer.add(msg);
+						for(int i = 0; i < users.size(); i++) {
+							if(msg.getReceivers().contains(users.get(i).getUsername())) {
+								users.get(i).addMessage(msg);
+							} else {
+								msgBuffer.add(msg);
+							}
+						}
 						System.out.println("Server: Message added to buffer");
 					}
 					if (obj instanceof String) {
@@ -158,19 +166,33 @@ public class MsgServer extends Thread {
 						}
 						if (obj.equals("getMsgBuffer")) {
 							int nbrOfMessages = 0;
-							for(int i = 0; i < msgBuffer.size(); i++) {
-								if(msgBuffer.get(i).getReceivers().contains(username)) {
-									nbrOfMessages++;
+							for(int i = 0; i < users.size(); i++) {
+								if(username.equals(users.get(i).getUsername())) {
+									nbrOfMessages = users.get(i).getMessages().size();
+									}
 								}
-							}
 							Message[] messages = new Message[nbrOfMessages];
-							for(int j = 0; j < messages.length; j++) {
-								for(int i = 0; i < msgBuffer.size(); i++) {
-									if(msgBuffer.get(i).getReceivers().contains(username)) {
-										messages[j] = msgBuffer.remove(i);
+							for(int i = 0; i < users.size(); i++) {
+								if(users.get(i).getUsername().equals(username)) {
+									for(int j = 0; j < users.get(i).getMessages().size(); j++) {
+										messages[j] = users.get(i).getMessages().remove(j);
 									}
 								}
 							}
+								
+//							for(int i = 0; i < msgBuffer.size(); i++) {
+//								if(msgBuffer.get(i).getReceivers().contains(username)) {
+//									nbrOfMessages++;
+//								}
+//							}
+//							Message[] messages = new Message[nbrOfMessages];
+//							for(int j = 0; j < messages.length; j++) {
+//								for(int i = 0; i < msgBuffer.size(); i++) {
+//									if(msgBuffer.get(i).getReceivers().contains(username)) {
+//										messages[j] = msgBuffer.get(i);
+//									}
+//								}
+//							}
 //							Message[] messagesTemp = new Message[msgBuffer.size()];
 //							for(int i = 0; i < messagesTemp.length; i++) {
 //								messagesTemp[i] = msgBuffer.get(i);
