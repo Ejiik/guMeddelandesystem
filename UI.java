@@ -122,8 +122,8 @@ public class UI extends JPanel {
 		txtFieldIP.setFont(font1);
 		txtFieldPort.setFont(font1);
 		txtFieldUsername.setFont(font1);
-		btnUpdateMessages.setPreferredSize(new Dimension(220, 30));
-		btnUpdateUsers.setPreferredSize(new Dimension(220, 30));
+		btnUpdateMessages.setPreferredSize(new Dimension(250, 30));
+		btnUpdateUsers.setPreferredSize(new Dimension(250, 30));
 		btnUpdateMessages.setFont(font1);
 		btnUpdateUsers.setFont(font1);
 		btnSendMessage.setPreferredSize(new Dimension(220, 30));

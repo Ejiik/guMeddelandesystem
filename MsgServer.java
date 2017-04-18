@@ -13,11 +13,15 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-
+/**
+ * A server for a message system. Can handle registering users, accepting messages and distributing
+ * these messages to the correct users. 
+ * @author Viktor Ekström, Erik Johansson, Simon Börjesson
+ *
+ */
 public class MsgServer extends Thread {
 	private Thread thread;
-	private int port;
-	private ArrayList<String> userReg = new ArrayList<String>();
+	private ArrayList<String> usersOnline = new ArrayList<String>();
 	private LinkedList<Message> msgBuffer = new LinkedList<Message>();
 	private ArrayList<User> users = new ArrayList<User>();
 	private ServerSocket serverSocket;
@@ -26,9 +30,11 @@ public class MsgServer extends Thread {
 	private LocalDateTime dateAndTime;
 	private final static Logger logger = Logger.getLogger("requests");
 	private FileHandler requests;
-
+	/**
+	 * Initiates the object with the port the server will listen on.
+	 * @param port Port for the ServerSocket.
+	 */
 	public MsgServer(int port) {
-		this.port = port;
 		try {
 			serverSocket = new ServerSocket(port);
 			requests = new FileHandler("files/requestLog.log");
@@ -36,14 +42,19 @@ public class MsgServer extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * Method for starting the thread on which the server runs.
+	 */
 	public void start() {
 		if(thread == null) {
 			thread = new Thread(this);
 			thread.start();
 		}
 	}
-	
+	/**
+	 * The run method of the thread. Initiates new ClientHandlers when a new client
+	 * connects to the server.
+	 */
 	public void run() {
 		System.out.println("Server startad");
 		try {
@@ -54,63 +65,37 @@ public class MsgServer extends Thread {
 				} catch (IOException e) {
 					e.printStackTrace();
 					socket.close();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Server stoppad");
 		}
 	}
-	
+	/**
+	 * Method for returning the current date and time of the server in the format
+	 * specified by DateTimeFormatter.
+	 * @return A String with the current date and time.
+	 */
 	public String dateAndTime() {
 		dateAndTime = LocalDateTime.now();
 		String date = dateTimeFormatter.format(dateAndTime);
 		return date;
 	}
-
-//	private class StartServer extends Thread {
-//		private int port;
-//
-//		public StartServer(int port) throws InterruptedException {
-//			this.port = port;
-//		}
-//
-//		public void run() {
-//			Socket socket = null;
-//			System.out.println("Server startad");
-//			try {
-//				ServerSocket serverSocket = new ServerSocket(port);
-//				while (true) {
-//					try {
-//						socket = serverSocket.accept();
-//						new ClientHandler(socket);
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//						socket.close();
-//					} catch (InterruptedException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//				System.out.println("Server stoppad");
-//			}
-//		}
-//	}
-	
-
+	/**
+	 * Inner class handling each client connected to the server and their communciation
+	 * with the server. 
+	 * @author Viktor Ekström
+	 *
+	 */
 	private class ClientHandler extends Thread {
-		private Socket socket;
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
-		private InetAddress clientAddress;
-
-		public ClientHandler(Socket socket) throws InterruptedException {
-			this.socket = socket;
+		/**
+		 * Initiates the ClientHandler with the socket the server is using.
+		 * @param socket Socket used for the streams.
+		 */
+		public ClientHandler(Socket socket) {
 			try {
-				this.clientAddress = socket.getInetAddress();
 				oos = new ObjectOutputStream(socket.getOutputStream());
 				ois = new ObjectInputStream(socket.getInputStream());
 				start();
@@ -118,26 +103,40 @@ public class MsgServer extends Thread {
 				e.printStackTrace();
 			}
 		}
-		
+		/**
+		 * The run method of the thread. Handles the communcation between the
+		 * server and this specific client.
+		 */
 		public void run() {
 			Message msg;
 			String username = new String();
 			Object obj;
 			boolean userInReg = false;
-
+			boolean userOnline = false;
+			
 			try {
-				username = (String) ois.readObject();
+				username = (String) ois.readObject();	
+				for(int i = 0; i < usersOnline.size(); i++) {
+					if(usersOnline.get(i).equals(username)) {
+						userOnline = true;
+					}
+				}
+				if(!userOnline) {
+					usersOnline.add(username);
+					System.out.println("Server: Added to list of online users");
+				} else {
+					System.out.println("Server: User already online.");
+				}
 				for(int i = 0; i < users.size(); i++) {
 					if(username.equals(users.get(i).getUsername())) {
 						userInReg = true;
 					}
 				}
 				if(!userInReg) {
-					userReg.add(username);
 					users.add(new User(username));
-					System.out.println("Server: Added user " + username);
+					System.out.println("Server: Added user " + username + " to Users list.");
 				} else {
-					System.out.println("Server: Did not add a user");
+					System.out.println("Server: Did not add user");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -160,7 +159,7 @@ public class MsgServer extends Thread {
 					}
 					if (obj instanceof String) {
 						if (obj.equals("getUserReg")) {
-							oos.writeUnshared(userReg);
+							oos.writeUnshared(usersOnline);
 							oos.flush();
 							System.out.println("Server: User list sent to client");
 						}
@@ -179,46 +178,6 @@ public class MsgServer extends Thread {
 									}
 								}
 							}
-								
-//							for(int i = 0; i < msgBuffer.size(); i++) {
-//								if(msgBuffer.get(i).getReceivers().contains(username)) {
-//									nbrOfMessages++;
-//								}
-//							}
-//							Message[] messages = new Message[nbrOfMessages];
-//							for(int j = 0; j < messages.length; j++) {
-//								for(int i = 0; i < msgBuffer.size(); i++) {
-//									if(msgBuffer.get(i).getReceivers().contains(username)) {
-//										messages[j] = msgBuffer.get(i);
-//									}
-//								}
-//							}
-//							Message[] messagesTemp = new Message[msgBuffer.size()];
-//							for(int i = 0; i < messagesTemp.length; i++) {
-//								messagesTemp[i] = msgBuffer.get(i);
-//							}
-//							
-//							for (int i = 0; i < messagesTemp.length; i++) {
-//								if (!messagesTemp[i].getReceivers().contains(username)) {
-//									messagesTemp[i] = null;
-//								}
-//							}
-//
-//							int nbrOfMessages = 0;
-//							for (int i = 0; i < messagesTemp.length; i++) {
-//								if (messagesTemp[i] == null) {
-//									if (!(i + 1 > messagesTemp.length)) {
-//										messagesTemp[i] = messagesTemp[i + 1];
-//										messagesTemp[i + 1] = null;
-//									}
-//								} else {
-//									nbrOfMessages++;
-//								}
-//							}
-//							Message[] messages = new Message[nbrOfMessages];
-//							for (int i = 0; i < nbrOfMessages; i++) {
-//								messages[i] = messagesTemp[i];
-//							}
 							oos.writeObject(messages);
 							oos.flush();
 							System.out.println("Server: List of messages sent");
@@ -229,10 +188,11 @@ public class MsgServer extends Thread {
 							System.out.println("Server: Requests username");
 							String removeUser = (String) ois.readObject();
 							System.out.println("Server: Received username: " + removeUser);
-							for (int i = 0; i < userReg.size(); i++) {
-								if (userReg.get(i).equals(removeUser)) {
-									userReg.remove(i);
+							for (int i = 0; i < usersOnline.size(); i++) {
+								if (usersOnline.get(i).equals(removeUser)) {
+									usersOnline.remove(i);
 									System.out.println("User " + removeUser + " removed");
+									interrupt();
 								}
 							}
 						}
