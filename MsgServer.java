@@ -12,9 +12,11 @@ import java.util.LinkedList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+
 /**
- * A server for a message system. Can handle registering users, accepting messages and distributing
- * these messages to the correct users. 
+ * A server for a message system. Can handle registering users, accepting
+ * messages and distributing these messages to the correct users.
+ * 
  * @author Viktor Ekström, Erik Johansson, Simon Börjesson
  *
  */
@@ -29,9 +31,12 @@ public class MsgServer extends Thread {
 	private LocalDateTime dateAndTime;
 	private final static Logger logger = Logger.getLogger("Serverlog");
 	private FileHandler log;
+
 	/**
 	 * Initiates the object with the port the server will listen on.
-	 * @param port Port for the ServerSocket.
+	 * 
+	 * @param port
+	 *            Port for the ServerSocket.
 	 */
 	public MsgServer(int port) {
 		try {
@@ -43,18 +48,20 @@ public class MsgServer extends Thread {
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * Method for starting the thread on which the server runs.
 	 */
 	public void start() {
-		if(thread == null) {
+		if (thread == null) {
 			thread = new Thread(this);
 			thread.start();
 		}
 	}
+
 	/**
-	 * The run method of the thread. Initiates new ClientHandlers when a new client
-	 * connects to the server.
+	 * The run method of the thread. Initiates new ClientHandlers when a new
+	 * client connects to the server.
 	 */
 	public void run() {
 		System.out.println("Server startad");
@@ -73,9 +80,11 @@ public class MsgServer extends Thread {
 			e.printStackTrace();
 		}
 	}
+
 	/**
-	 * Method for returning the current date and time of the server in the format
-	 * specified by DateTimeFormatter.
+	 * Method for returning the current date and time of the server in the
+	 * format specified by DateTimeFormatter.
+	 * 
 	 * @return A String with the current date and time.
 	 */
 	public String dateAndTime() {
@@ -83,9 +92,11 @@ public class MsgServer extends Thread {
 		String date = dateTimeFormatter.format(dateAndTime);
 		return date;
 	}
+
 	/**
-	 * Inner class handling each client connected to the server and their communciation
-	 * with the server. 
+	 * Inner class handling each client connected to the server and their
+	 * communciation with the server.
+	 * 
 	 * @author Viktor Ekström
 	 *
 	 */
@@ -93,9 +104,12 @@ public class MsgServer extends Thread {
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
 		private Socket socket;
+
 		/**
 		 * Initiates the ClientHandler with the socket the server is using.
-		 * @param socket Socket used for the streams.
+		 * 
+		 * @param socket
+		 *            Socket used for the streams.
 		 */
 		public ClientHandler(Socket socket) {
 			this.socket = socket;
@@ -107,6 +121,7 @@ public class MsgServer extends Thread {
 				e.printStackTrace();
 			}
 		}
+
 		/**
 		 * The run method of the thread. Handles the communcation between the
 		 * server and this specific client.
@@ -117,27 +132,27 @@ public class MsgServer extends Thread {
 			Object obj;
 			boolean userInReg = false;
 			boolean userOnline = false;
-			
+
 			try {
-				username = (String) ois.readObject();	
-				for(int i = 0; i < usersOnline.size(); i++) {
-					if(usersOnline.get(i).equals(username)) {
+				username = (String) ois.readObject();
+				for (int i = 0; i < usersOnline.size(); i++) {
+					if (usersOnline.get(i).equals(username)) {
 						userOnline = true;
 					}
 				}
-				if(!userOnline) {
+				if (!userOnline) {
 					usersOnline.add(username);
 					logger.info("User " + username + " is online.");
 					System.out.println("Server: Added to list of online users");
 				} else {
 					System.out.println("Server: User already online.");
 				}
-				for(int i = 0; i < users.size(); i++) {
-					if(username.equals(users.get(i).getUsername())) {
+				for (int i = 0; i < users.size(); i++) {
+					if (username.equals(users.get(i).getUsername())) {
 						userInReg = true;
 					}
 				}
-				if(!userInReg) {
+				if (!userInReg) {
 					users.add(new User(username));
 					System.out.println("Server: Added user " + username + " to Users list.");
 					logger.info("New user: " + socket.getLocalAddress() + " is user " + username);
@@ -147,17 +162,21 @@ public class MsgServer extends Thread {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 			while (true) {
-				try {	
+				try {
 					obj = ois.readObject();
 					if (obj instanceof Message) {
 						msg = (Message) obj;
 						msg.setTimeRecievedServer(dateAndTime());
-						logger.info("Server receieved message with body: " + msg.getMessage() + ". And image: "
-								+ msg.getImageIcon().getDescription());
-						for(int i = 0; i < users.size(); i++) {
-							if(msg.getReceivers().contains(users.get(i).getUsername())) {
+						if (msg.getImageIcon() == null) {
+							logger.info("Server receieved message with body: " + msg.getMessage());
+						} else {
+							logger.info("Server receieved message with body: " + msg.getMessage() + ". And image: "
+									+ msg.getImageIcon().getDescription());
+						}
+						for (int i = 0; i < users.size(); i++) {
+							if (msg.getReceivers().contains(users.get(i).getUsername())) {
 								users.get(i).addMessage(msg);
 							} else {
 								msgBuffer.add(msg);
@@ -173,15 +192,15 @@ public class MsgServer extends Thread {
 						}
 						if (obj.equals("getMsgBuffer")) {
 							int nbrOfMessages = 0;
-							for(int i = 0; i < users.size(); i++) {
-								if(username.equals(users.get(i).getUsername())) {
+							for (int i = 0; i < users.size(); i++) {
+								if (username.equals(users.get(i).getUsername())) {
 									nbrOfMessages = users.get(i).getMessages().size();
-									}
 								}
+							}
 							Message[] messages = new Message[nbrOfMessages];
-							for(int i = 0; i < users.size(); i++) {
-								if(users.get(i).getUsername().equals(username)) {
-									for(int j = 0; j < users.get(i).getMessages().size(); j++) {
+							for (int i = 0; i < users.size(); i++) {
+								if (users.get(i).getUsername().equals(username)) {
+									for (int j = 0; j < users.get(i).getMessages().size(); j++) {
 										messages[j] = users.get(i).getMessages().remove(j);
 									}
 								}
