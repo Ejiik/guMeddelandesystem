@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 /**
  * A server for a message system. Can handle registering users, accepting messages and distributing
  * these messages to the correct users. 
@@ -28,8 +29,8 @@ public class MsgServer extends Thread {
 	private Socket socket;
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 	private LocalDateTime dateAndTime;
-	private final static Logger logger = Logger.getLogger("requests");
-	private FileHandler requests;
+	private final static Logger logger = Logger.getLogger("Serverlog");
+	private FileHandler log;
 	/**
 	 * Initiates the object with the port the server will listen on.
 	 * @param port Port for the ServerSocket.
@@ -37,7 +38,9 @@ public class MsgServer extends Thread {
 	public MsgServer(int port) {
 		try {
 			serverSocket = new ServerSocket(port);
-			requests = new FileHandler("files/requestLog.log");
+			log = new FileHandler("files/Serverlog.log");
+			log.setFormatter(new SimpleFormatter());
+			logger.addHandler(log);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -62,6 +65,7 @@ public class MsgServer extends Thread {
 				try {
 					socket = serverSocket.accept();
 					new ClientHandler(socket);
+					logger.info("New connection: " + socket.getLocalAddress());
 				} catch (IOException e) {
 					e.printStackTrace();
 					socket.close();
@@ -90,11 +94,13 @@ public class MsgServer extends Thread {
 	private class ClientHandler extends Thread {
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
+		private Socket socket;
 		/**
 		 * Initiates the ClientHandler with the socket the server is using.
 		 * @param socket Socket used for the streams.
 		 */
 		public ClientHandler(Socket socket) {
+			this.socket = socket;
 			try {
 				oos = new ObjectOutputStream(socket.getOutputStream());
 				ois = new ObjectInputStream(socket.getInputStream());
@@ -123,6 +129,7 @@ public class MsgServer extends Thread {
 				}
 				if(!userOnline) {
 					usersOnline.add(username);
+					logger.info("User " + username + " is online.");
 					System.out.println("Server: Added to list of online users");
 				} else {
 					System.out.println("Server: User already online.");
@@ -135,6 +142,7 @@ public class MsgServer extends Thread {
 				if(!userInReg) {
 					users.add(new User(username));
 					System.out.println("Server: Added user " + username + " to Users list.");
+					logger.info("New user: " + socket.getLocalAddress() + " is user " + username);
 				} else {
 					System.out.println("Server: Did not add user");
 				}
@@ -148,6 +156,8 @@ public class MsgServer extends Thread {
 					if (obj instanceof Message) {
 						msg = (Message) obj;
 						msg.setTimeRecievedServer(dateAndTime());
+						logger.info("Server receieved message with body: " + msg.getMessage() + ". And image: "
+								+ msg.getImageIcon().getDescription());
 						for(int i = 0; i < users.size(); i++) {
 							if(msg.getReceivers().contains(users.get(i).getUsername())) {
 								users.get(i).addMessage(msg);
@@ -191,6 +201,7 @@ public class MsgServer extends Thread {
 							for (int i = 0; i < usersOnline.size(); i++) {
 								if (usersOnline.get(i).equals(removeUser)) {
 									usersOnline.remove(i);
+									logger.info("User " + username + " is no longer online.");
 									System.out.println("User " + removeUser + " removed");
 									interrupt();
 								}

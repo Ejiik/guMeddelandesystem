@@ -48,6 +48,7 @@ public class UI extends JPanel {
 	private StyledDocument doc;
 	private Style style;
 	private Client client;
+	private String imagename;
 	/**
 	 * Constructor for the UI. Does nothing special.
 	 */
@@ -235,6 +236,7 @@ public class UI extends JPanel {
 	 * @param imageIcon The ImageIcon that is to be displayed.
 	 */
 	public void displayPreview(ImageIcon imageIcon) {
+		imageIcon.setDescription(imagename);
 		lblImageViewer.setIcon(imageIcon);
 	}
 
@@ -379,6 +381,7 @@ public class UI extends JPanel {
 				returnval = fileChooser.showOpenDialog(null);
 				if (returnval == JFileChooser.APPROVE_OPTION) {
 					filepath = fileChooser.getSelectedFile().getPath();
+					imagename = fileChooser.getSelectedFile().getName();
 					displayPreview(new ImageIcon(fileChooser.getSelectedFile().getPath()));
 					System.out.println("UI: Chose image");
 				}
