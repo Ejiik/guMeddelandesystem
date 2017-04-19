@@ -5,16 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedList;
-
 import javax.swing.ImageIcon;
-import javax.swing.SwingUtilities;
 /**
  * Client class for communicating with the messages server. Can connect to server and receiever
  * list of online users. Can send and receive messages.
@@ -78,7 +72,6 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
 	/**
 	 * Sends the server a message that the user has logged out of the system.
 	 */
@@ -91,7 +84,6 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-
 	/**
 	 * Sets the port the server is listening on. Used when connecting to the server.
 	 * @param port Port server is listening on.

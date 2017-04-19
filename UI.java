@@ -1,19 +1,10 @@
 package guMeddelandesystem;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -28,7 +19,7 @@ public class UI extends JPanel {
 	private MouseAdapter mouseListener = new MouseAdapter();
 	private JTextField txtFieldUsername = new JTextField("Användarnamn");
 	private JButton btnLogin = new JButton("O");
-	private JTextField txtFieldIP = new JTextField("localhost");
+	private JTextField txtFieldIP = new JTextField("Ip-adress");
 	private JTextField txtFieldPort = new JTextField("3500");
 	private JLabel lblImageViewer = new JLabel();
 	private JTextArea txtAreaWriteMessage = new JTextArea();
