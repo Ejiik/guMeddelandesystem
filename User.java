@@ -46,4 +46,8 @@ public class User {
 	public ArrayList<Message> getMessages() {
 		return messages;
 	}
+	
+	public void removeMessages(){
+		messages.clear();
+	}
 }
