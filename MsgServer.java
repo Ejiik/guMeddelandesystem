@@ -277,12 +277,7 @@ public class MsgServer extends Thread {
 			System.out.println("Server: Added " + name() + " to chList");
 			
 			chList.add(this);
-			for(ClientHandler ch : chList){
-				System.out.println("name: " + ch.name());
-			}
-			System.out.println("2");
 			updateCH();
-			System.out.println("3");
 
 			while (true) {
 				try {
