@@ -5,18 +5,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-
-import javax.net.ssl.SNIServerName;
 
 /**
  * A server for a message system. Can handle registering users, accepting
@@ -29,7 +24,7 @@ public class MsgServer extends Thread {
 	private Thread thread;
 	private ArrayList<String> usersOnline = new ArrayList<String>();
 	private LinkedList<Message> msgBuffer = new LinkedList<Message>();
-	private HashMap<String, User> users = new HashMap<>();
+	private ArrayList<User> users = new ArrayList<User>();
 	private ArrayList<ClientHandler> chList = new ArrayList<ClientHandler>();
 	private ServerSocket serverSocket;
 	private Socket socket;
@@ -54,6 +49,16 @@ public class MsgServer extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Tells all the clienthandelers to update
+	 */
+	
+	public void updateCH(){
+		for(ClientHandler ch : chList){
+			ch.update();
+		}
+	}
 
 	/**
 	 * Method for starting the thread on which the server runs.
@@ -62,27 +67,6 @@ public class MsgServer extends Thread {
 		if (thread == null) {
 			thread = new Thread(this);
 			thread.start();
-		}
-	}
-	
-	/**
-	 * Method that tells all client handlers to update their userlist and messages.
-	 */
-	
-	public void uppdateClientHandelers(){
-		boolean tempBool;
-		if (!chList.isEmpty()){
-			for(ClientHandler ch : chList){
-				tempBool = false;
-				for(String uo : usersOnline){
-					if(uo.equals(ch.name())){
-						tempBool = true;
-					}
-				}
-				if(tempBool){
-					ch.uppdate();
-				}
-			}
 		}
 	}
 
@@ -96,7 +80,7 @@ public class MsgServer extends Thread {
 			while (true) {
 				try {
 					socket = serverSocket.accept();
-					chList.add(new ClientHandler(socket, this));
+					new ClientHandler(socket);
 					logger.info("New connection: " + socket.getLocalAddress());
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -186,51 +170,37 @@ public class MsgServer extends Thread {
 	}
 	
 	/**
-	 * synchronized get method to user map
-	 * @param name	String
+	 * synchronized get method to user list
+	 * @param int	i
 	 * @return	User
 	 */
 	
-	private synchronized User getUsers(String name){
+	private synchronized User getUsers(int i){
 		synchronized (users) {
-			return (users.get(name));
+			return (users.get(i));
 		}
 	}
 	
 	/**
-	 * synchronized put method to user map
+	 * synchronized add method to user list
 	 * @param user	User
 	 */
 	
 	private synchronized void addUsers(User user){
 		synchronized (users) {
-			if(!users.containsKey(user.getUsername())){
-				users.put(user.getUsername(), user);
-			}
+				users.add(user);
 			System.out.println("Fins redan");
 		}
 	}
 	
 	/**
-	 * synchronized size method to user map
+	 * synchronized size method to user list
 	 * @return	int
 	 */
 	
 	private synchronized int sizeUsers(){
 		synchronized (users) {
 			return (users.size());
-		}
-	}
-	
-	/**
-	 * synchronized containsKey method to user map
-	 * @param name
-	 * @return
-	 */
-	
-	private synchronized boolean containsUsers(String name){
-		synchronized (users) {
-			return (users.containsKey(name));
 		}
 	}
 
@@ -245,19 +215,17 @@ public class MsgServer extends Thread {
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
 		private Socket socket;
-		private MsgServer server;
 		
-		private String username;
+		String username = new String();
 
 		/**
 		 * Initiates the ClientHandler with the socket the server is using.
 		 * 
-		 * @param	socket		Socket used for the streams.
-		 * @param	server		MsgServer 
+		 * @param socket
+		 *            Socket used for the streams.
 		 */
-		public ClientHandler(Socket socket, MsgServer server) {
+		public ClientHandler(Socket socket) {
 			this.socket = socket;
-			this.server = server;
 			try {
 				oos = new ObjectOutputStream(socket.getOutputStream());
 				ois = new ObjectInputStream(socket.getInputStream());
@@ -291,13 +259,10 @@ public class MsgServer extends Thread {
 				} else {
 					System.out.println("Server: User already online.");
 				}
-//				for (int i = 0; i < sizeUsers(); i++) {
-//					if (username.equals(getUsers(i).getUsername())) {
-//						userInReg = true;
-//					}
-//				}
-				if (containsUsers(username)){
-					userInReg = true;
+				for (int i = 0; i < sizeUsers(); i++) {
+					if (username.equals(getUsers(i).getUsername())) {
+						userInReg = true;
+					}
 				}
 				if (!userInReg) {
 					addUsers(new User(username));
@@ -309,10 +274,17 @@ public class MsgServer extends Thread {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			System.out.println("Server: Added " + name() + " to chList");
 			
-			server.uppdateClientHandelers();
-			
-			while (!Thread.interrupted()) {
+			chList.add(this);
+			for(ClientHandler ch : chList){
+				System.out.println("name: " + ch.name());
+			}
+			System.out.println("2");
+			updateCH();
+			System.out.println("3");
+
+			while (true) {
 				try {
 					obj = ois.readObject();
 					if (obj instanceof Message) {
@@ -324,18 +296,15 @@ public class MsgServer extends Thread {
 							logger.info("Server receieved message with body: " + msg.getMessage() + ". And image: "
 									+ msg.getImageIcon().getDescription());
 						}
-//						for (int i = 0; i < sizeUsers(); i++) {
-//							if (msg.getReceivers().contains(getUsers(i).getUsername())) {
-//								getUsers(i).addMessage(msg);
-//							} else {
-//								addMsgBuffer(msg);
-//							}
-//						}
-						for (int i = 0; i < msg.getReceivers().size(); i++){
-							getUsers(msg.getReceivers().get(i)).addMessage(msg);
+						for (int i = 0; i < sizeUsers(); i++) {
+							if (msg.getReceivers().contains(getUsers(i).getUsername())) {
+								getUsers(i).addMessage(msg);
+							} else {
+								addMsgBuffer(msg);
+							}
 						}
 						System.out.println("Server: Message added to buffer");
-						server.uppdateClientHandelers();
+						updateCH();
 					}
 					if (obj instanceof String) {
 						if (obj.equals("getUserReg")) {
@@ -345,25 +314,19 @@ public class MsgServer extends Thread {
 						}
 						if (obj.equals("getMsgBuffer")) {
 							int nbrOfMessages = 0;
-//							for (int i = 0; i < sizeUsers(); i++) {
-//								if (username.equals(getUsers(i).getUsername())) {
-//									nbrOfMessages = getUsers(i).getMessages().size();
-//								}
-//							}
-							nbrOfMessages = getUsers(username).getMessages().size();
-									
-							Message[] messages = new Message[nbrOfMessages];
-//							for (int i = 0; i < sizeUsers(); i++) {
-//								if (getUsers(i).getUsername().equals(username)) {
-//									for (int j = 0; j < getUsers(i).getMessages().size(); j++) {
-//										messages[j] = getUsers(i).getMessages().remove(j);
-//									}
-//								}
-//							}
-							for (int j = 0; j < getUsers(username).getMessages().size(); j++) {
-								messages[j] = getUsers(username).getMessages().remove(j);
+							for (int i = 0; i < sizeUsers(); i++) {
+								if (username.equals(getUsers(i).getUsername())) {
+									nbrOfMessages = getUsers(i).getMessages().size();
+								}
 							}
-							
+							Message[] messages = new Message[nbrOfMessages];
+							for (int i = 0; i < sizeUsers(); i++) {
+								if (getUsers(i).getUsername().equals(username)) {
+									for (int j = 0; j < getUsers(i).getMessages().size(); j++) {
+										messages[j] = getUsers(i).getMessages().remove(j);
+									}
+								}
+							}
 							oos.writeObject(messages);
 							oos.flush();
 							System.out.println("Server: List of messages sent");
@@ -382,6 +345,12 @@ public class MsgServer extends Thread {
 									interrupt();
 								}
 							}
+							for(int i = 0; i < chList.size(); i++){
+								if(chList.get(i).name().equals(removeUser)){
+									chList.remove(i);
+									System.out.println("Server: Removed " + removeUser + " from chlist");
+								}
+							}
 						}
 					}
 				} catch (IOException | ClassNotFoundException e) {
@@ -390,21 +359,24 @@ public class MsgServer extends Thread {
 			}
 		}
 		
-		private String name(){
+		/**
+		 * Returns the username of the clientHandeler  
+		 * @return	String
+		 */
+		public String name(){
 			return username;
 		}
 		
 		/**
-		 * Send out "changes" to the client making the client to triggering an update to its usersonline list
+		 * Tells the client to update itself
 		 */
-		
-		public void uppdate(){
-			try {
-				oos.writeObject("changes");
-				oos.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		public void update(){
+		try {
+			oos.writeObject("changes");
+			oos.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		}
 	}
 }

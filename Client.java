@@ -27,6 +27,7 @@ public class Client {
 	private ArrayList<String> users = new ArrayList<String>();
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 	private LocalDateTime dateAndTime;
+	private boolean logout;
 /**
  * Constructor requiring a passed UI used for interacting with the system.
  * @param ui The UI model to be used.
@@ -83,6 +84,7 @@ public class Client {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		logout = true;
 	}
 	/**
 	 * Sets the port the server is listening on. Used when connecting to the server.
@@ -122,6 +124,7 @@ public class Client {
 			new Listener().start();
 			getUsers();
 			getMessages();
+			logout = false;
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -199,9 +202,11 @@ public class Client {
 							System.out.println("Client: Wrote username: " + username);
 						}
 						if(obj.equals("changes")) {
-							System.out.println("Client " + username +": Notified of user changed");
-							getUsers();
-							getMessages();
+							if(!logout){
+								System.out.println("Client " + username +": Notified of user changed");
+								getUsers();
+								getMessages();
+							}
 						}
 					}
 				}
